@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Charte Typographique MamSitter */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #F3ede0;
+}
+
+/* Titres H1-H6 : Poppins 700 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+}
+
+/* Navigation : Lato 700 + uppercase */
+nav, nav a, nav button {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+}
+
+/* Boutons : uppercase */
+button {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Titres de sections : uppercase */
+.section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
