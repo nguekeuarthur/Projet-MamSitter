@@ -11,6 +11,28 @@ export default function AuthRegister() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
+  // Champs supplémentaires pour MamaSitters
+  const [city, setCity] = useState('')
+  const [postalCode, setPostalCode] = useState('')
+  const [hourlyRate, setHourlyRate] = useState('')
+  const [bio, setBio] = useState('')
+  const [avatar, setAvatar] = useState('')
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError("La photo est trop volumineuse (max 5Mo).");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatar(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const getPasswordStrength = (pwd: string) => {
     if (!pwd) return 0;
     let score = 0;
@@ -38,7 +60,17 @@ export default function AuthRegister() {
     }
     setLoading(true)
     try {
-      await register({ name, email, password, role })
+      await register({
+        name,
+        email,
+        password,
+        role,
+        city: role === 'MamaSitter' ? city : undefined,
+        postalCode: role === 'MamaSitter' ? postalCode : undefined,
+        hourlyRate: role === 'MamaSitter' ? Number(hourlyRate) : undefined,
+        bio: role === 'MamaSitter' ? bio : undefined,
+        avatar: role === 'MamaSitter' ? avatar : undefined
+      })
       setSuccess(true)
     } catch (err: any) {
       setError(err?.message || 'Erreur')
@@ -169,6 +201,75 @@ export default function AuthRegister() {
                 </button>
               </div>
             </div>
+
+            {role === 'MamaSitter' && (
+              <div className="space-y-5 pt-2 border-t border-gray-100 mt-2 animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Ville</label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      required={role === 'MamaSitter'}
+                      placeholder="Ex. Paris"
+                      className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Code Postal</label>
+                    <input
+                      type="text"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      required={role === 'MamaSitter'}
+                      placeholder="75001"
+                      className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Tarif horaire (€)</label>
+                  <input
+                    type="number"
+                    value={hourlyRate}
+                    onChange={(e) => setHourlyRate(e.target.value)}
+                    required={role === 'MamaSitter'}
+                    placeholder="25"
+                    className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato"
+                  />
+                </div>
+                <div>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Bio / Expérience</label>
+                  <textarea
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    required={role === 'MamaSitter'}
+                    placeholder="Parlez-nous de vous et de votre expérience avec les enfants..."
+                    rows={3}
+                    className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Photo de profil (facultatif)</label>
+                  <div className="flex items-center gap-4">
+                    {avatar ? (
+                      <img src={avatar} alt="Aperçu" className="w-16 h-16 rounded-full object-cover border border-gray-200" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center font-lato">
+                        Avatar
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-vert/10 file:text-vert hover:file:bg-vert/20 file:cursor-pointer transition"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
             <button
               type="submit"
               disabled={loading}

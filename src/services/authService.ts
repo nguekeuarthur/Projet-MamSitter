@@ -2,7 +2,17 @@
 const API_URL = 'http://localhost:8000/api';
 
 // ─── Inscription ────────────────────────────────────────────
-export async function register(payload: { name: string; email: string; password: string; role?: string }) {
+export async function register(payload: {
+  name: string;
+  email: string;
+  password: string;
+  role?: string;
+  city?: string;
+  postalCode?: string;
+  bio?: string;
+  hourlyRate?: number;
+  avatar?: string;
+}) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -95,4 +105,16 @@ export async function signOut() {
 export async function getCurrentUser() {
   const user = localStorage.getItem('mamsitter_user');
   return user ? JSON.parse(user) : null;
+}
+
+// Fonction pour obtenir les headers d'authentification
+export function authHeaders(): Record<string, string> {
+  const token = localStorage.getItem('mamsitter_token');
+  if (token) {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  }
+  return { 'Content-Type': 'application/json' };
 }

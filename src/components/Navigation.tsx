@@ -18,7 +18,7 @@ export default function Navigation() {
     const handleAuthChange = () => loadUser();
     window.addEventListener('auth-change', handleAuthChange);
     window.addEventListener('storage', handleAuthChange);
-    
+
     return () => {
       window.removeEventListener('auth-change', handleAuthChange);
       window.removeEventListener('storage', handleAuthChange);
@@ -43,22 +43,24 @@ export default function Navigation() {
             <a href="#services" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
               Nos Services
             </a>
-            <a href="#how-it-works" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-              Comment ça marche
+            <a href="#/concept" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              Le Concept
             </a>
-            <a href="#testimonials" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-              Témoignages
-            </a>
-            <a href="#become-sitter" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-              Devenir MamaSitter
+            <a href="#/mamasitters" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              Nos MamaSitters
             </a>
 
             {user ? (
               <>
-                <span className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm">
+                {user.role === 'Maman' && (
+                  <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4">
+                    Trouver une MamaSitter
+                  </a>
+                )}
+                <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm hover:text-sable transition-colors">
                   <User className="w-4 h-4" />
                   {user.name}
-                </span>
+                </a>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 border border-sable/30 text-sable px-5 py-2 rounded-full hover:bg-sable hover:text-white hover:border-sable transition-all duration-300 font-lato font-bold uppercase text-sm tracking-wide group shadow-sm hover:shadow-md"
@@ -94,22 +96,24 @@ export default function Navigation() {
             <a href="#services" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
               Nos Services
             </a>
-            <a href="#how-it-works" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-              Comment ça marche
+            <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              Le Concept
             </a>
-            <a href="#testimonials" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-              Témoignages
-            </a>
-            <a href="#become-sitter" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-              Devenir MamaSitter
+            <a href="#/mamasitters" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              Nos MamaSitters
             </a>
 
             {user ? (
               <>
-                <span className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm">
+                {user.role === 'Maman' && (
+                  <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                    Trouver une MamaSitter
+                  </a>
+                )}
+                <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm mt-4 hover:text-sable transition-colors">
                   <User className="w-4 h-4" />
                   {user.name}
-                </span>
+                </a>
                 <button
                   onClick={handleLogout}
                   className="block w-full text-center mt-2 border border-sable/30 text-sable px-6 py-2.5 rounded-full hover:bg-sable hover:text-white transition-all duration-300 font-lato font-bold uppercase text-sm tracking-wide group"

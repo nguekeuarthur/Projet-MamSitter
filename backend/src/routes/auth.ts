@@ -10,7 +10,7 @@ const router = Router();
 // Inscription avec envoi de mail de vérification
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, role } = req.body;
+    const { email, password, name, role, city, postalCode, bio, hourlyRate, avatar } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -28,13 +28,34 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
+    // Géocodage si city/postalCode sont fournis
+    let location = { type: 'Point', coordinates: [0, 0] };
+    if (city || postalCode) {
+      try {
+        const query = `${city || ''} ${postalCode || ''}`.trim();
+        const response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=1`);
+        const data: any = await response.json();
+        if (data.features && data.features.length > 0) {
+          location.coordinates = data.features[0].geometry.coordinates;
+        }
+      } catch (err) {
+        console.error('Erreur geocodage inscription:', err);
+      }
+    }
+
     const newUser = new User({
       email,
       password: hashedPassword,
       name,
       verificationToken,
       isVerified: false,
-      role: role || 'Maman'
+      role: role || 'Maman',
+      city,
+      postalCode,
+      bio,
+      hourlyRate: hourlyRate ? Number(hourlyRate) : 0,
+      avatar,
+      location
     });
 
     await newUser.save();
