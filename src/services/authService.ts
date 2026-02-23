@@ -12,6 +12,7 @@ export async function register(payload: {
   bio?: string;
   hourlyRate?: number;
   avatar?: string;
+  idCard?: string;
 }) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',

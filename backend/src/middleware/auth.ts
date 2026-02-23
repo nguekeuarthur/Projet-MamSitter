@@ -21,6 +21,10 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
             throw new Error();
         }
 
+        if (user.isBanned) {
+            return res.status(403).json({ error: 'Votre compte a été suspendu.' });
+        }
+
         req.user = user;
         next();
     } catch (error) {

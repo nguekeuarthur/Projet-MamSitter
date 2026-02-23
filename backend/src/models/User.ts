@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
   hourlyRate: { type: Number, default: 0 },
   avatar: { type: String, default: '' },
 
+  // Validation Admin (Spécifique MamaSitters)
+  idCard: { type: String, default: '' }, // Document d'identité (base64)
+  isApproved: { type: Boolean, default: false }, // Validation par l'admin
+  approvedAt: { type: Date },
+
   // Géolocalisation
   city: { type: String, default: '' },
   postalCode: { type: String, default: '' },
@@ -34,6 +39,10 @@ const userSchema = new mongoose.Schema({
   },
 
   createdAt: { type: Date, default: Date.now },
+
+  // Bannissement
+  isBanned: { type: Boolean, default: false },
+  bannedAt: { type: Date },
 });
 
 userSchema.index({ location: '2dsphere' });

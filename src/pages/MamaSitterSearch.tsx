@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Search, MapPin, Loader2, Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, MapPin, Loader2, Star, LocateFixed } from 'lucide-react';
 import { getCurrentUser } from '../services/authService';
 import { searchMamaSitters, MamaSitter } from '../services/userService';
 
@@ -10,10 +10,10 @@ const RADIUS_OPTIONS = [
     { value: 10, label: '10 km' },
     { value: 20, label: '20 km' },
     { value: 50, label: '50 km' },
+    { value: 100, label: '100 km' },
 ];
 
 export default function MamaSitterSearch() {
-    // remove unused user state
     const [mamasitters, setMamasitters] = useState<MamaSitter[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -23,6 +23,8 @@ export default function MamaSitterSearch() {
     const [postalCode, setPostalCode] = useState('');
     const [city, setCity] = useState('');
     const [radius, setRadius] = useState<number>(0);
+    const [userCoords, setUserCoords] = useState<{ lat: number, lng: number } | null>(null);
+    const [locating, setLocating] = useState(false);
 
     // Vérification de l'accès réservé
     useEffect(() => {
@@ -33,14 +35,17 @@ export default function MamaSitterSearch() {
                     window.location.hash = '#/login';
                     return;
                 }
-                // utilisateur authentifié validé
-                // Sécurisation stricte : accès réservé aux Mamans inscrites (et Admin)
                 if (currentUser.role && currentUser.role !== 'Maman' && currentUser.role !== 'Admin') {
                     window.location.hash = '#/';
                     return;
                 }
 
-                // Charger une première fois les MamaSitters sans filtre
+                // Tenter de récupérer la position stockée ou demander si c'est la première fois
+                const savedCoords = localStorage.getItem('user_coords');
+                if (savedCoords) {
+                    setUserCoords(JSON.parse(savedCoords));
+                }
+
                 await performSearch();
             } catch (err) {
                 window.location.hash = '#/login';
@@ -49,7 +54,6 @@ export default function MamaSitterSearch() {
             }
         };
         initPage();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const performSearch = async (overrideParams?: any) => {
@@ -59,29 +63,50 @@ export default function MamaSitterSearch() {
             let lat: number | undefined;
             let lng: number | undefined;
 
-            // Si un rayon est spécifié et qu'une ville ou code postal est entré, on cherche les coordonnées via l'API adresse du gouvernement.
-            if (overrideParams?.radius > 0 || radius > 0) {
-                const searchQuery = overrideParams?.postalCode || overrideParams?.city || postalCode || city;
+            const currentRadius = overrideParams?.radius ?? radius;
+            const currentCity = overrideParams?.city ?? city;
+            const currentPostalCode = overrideParams?.postalCode ?? postalCode;
+            const coords = overrideParams?.coords ?? userCoords;
+
+            if (currentRadius > 0) {
+                const searchQuery = currentPostalCode || currentCity;
                 if (searchQuery) {
-                    const geocodeRes = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=1`);
-                    const geocodeData = await geocodeRes.json();
+                    let geocodeRes = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=1`);
+                    let geocodeData = await geocodeRes.json();
 
                     if (geocodeData.features && geocodeData.features.length > 0) {
                         const coordinates = geocodeData.features[0].geometry.coordinates; // [lng, lat]
                         lng = coordinates[0];
                         lat = coordinates[1];
                     } else {
-                        setError('Impossible de trouver les coordonnées pour cette localité.');
-                        setLoading(false);
-                        return;
+                        // Fallback Nominatim pour l'international (Genève...)
+                        const nomRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=1`);
+                        const nomData = await nomRes.json();
+                        if (nomData && nomData.length > 0) {
+                            lng = parseFloat(nomData[0].lon);
+                            lat = parseFloat(nomData[0].lat);
+                        } else {
+                            setError('Impossible de trouver les coordonnées pour cette localité.');
+                            setLoading(false);
+                            return;
+                        }
                     }
+                }
+                // Priorité 2 : Position GPS si activée
+                else if (coords) {
+                    lat = coords.lat;
+                    lng = coords.lng;
+                } else {
+                    setError('Veuillez saisir une ville ou utiliser votre position actuelle pour le filtrage par rayon.');
+                    setLoading(false);
+                    return;
                 }
             }
 
             const results = await searchMamaSitters({
-                city: overrideParams?.city ?? city,
-                postalCode: overrideParams?.postalCode ?? postalCode,
-                radius: overrideParams?.radius ?? radius,
+                city: currentCity,
+                postalCode: currentPostalCode,
+                radius: currentRadius,
                 lat,
                 lng
             });
@@ -91,6 +116,39 @@ export default function MamaSitterSearch() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleLocate = () => {
+        setLocating(true);
+        setError('');
+        if (!navigator.geolocation) {
+            setError("La géolocalisation n'est pas supportée.");
+            setLocating(false);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const newCoords = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                setUserCoords(newCoords);
+                localStorage.setItem('user_coords', JSON.stringify(newCoords));
+                setLocating(false);
+                setCity('');
+                setPostalCode('');
+
+                const nextRadius = radius > 0 ? radius : 20;
+                if (radius === 0) setRadius(20);
+                performSearch({ radius: nextRadius, coords: newCoords });
+            },
+            (err) => {
+                console.error(err);
+                setError("Accès position refusé. Saisissez votre ville manuellement.");
+                setLocating(false);
+            }
+        );
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -128,7 +186,7 @@ export default function MamaSitterSearch() {
                                 value={city}
                                 onChange={(e) => setCity(e.target.value)}
                                 placeholder="Ex. Paris, Lyon..."
-                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20"
+                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato"
                             />
                             <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
                         </div>
@@ -142,7 +200,7 @@ export default function MamaSitterSearch() {
                                 value={postalCode}
                                 onChange={(e) => setPostalCode(e.target.value)}
                                 placeholder="Ex. 75001"
-                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20"
+                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato"
                             />
                             <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
                         </div>
@@ -153,7 +211,7 @@ export default function MamaSitterSearch() {
                         <select
                             value={radius}
                             onChange={(e) => setRadius(Number(e.target.value))}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 cursor-pointer"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 cursor-pointer h-[48px] font-lato"
                         >
                             {RADIUS_OPTIONS.map(opt => (
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -164,12 +222,39 @@ export default function MamaSitterSearch() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full md:w-auto px-8 py-3 bg-sable text-white font-bold rounded-lg uppercase tracking-wide hover:bg-sable/90 transition flex justify-center items-center"
+                        className="w-full md:w-auto px-10 py-3 bg-vert text-white font-bold rounded-lg uppercase tracking-widest hover:bg-vert/90 transition shadow-lg shadow-vert/20 flex justify-center items-center h-[48px] font-poppins"
                     >
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Filtrer'}
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Rechercher'}
                     </button>
                 </form>
-                {error && <p className="mt-4 text-red-500 font-lato text-sm">{error}</p>}
+
+                <div className="mt-8 pt-8 border-t border-gray-100 flex flex-col items-center justify-center gap-4">
+                    <button
+                        type="button"
+                        onClick={handleLocate}
+                        disabled={locating}
+                        className={`flex items-center gap-3 px-8 py-3 rounded-full border-2 transition-all font-poppins font-bold text-xs uppercase tracking-widest ${userCoords ? 'bg-sable border-sable text-white shadow-xl shadow-sable/25' : 'bg-white border-sable/30 text-sable hover:bg-sable hover:text-white hover:border-sable hover:shadow-lg hover:shadow-sable/20'}`}
+                    >
+                        {locating ? <Loader2 className="w-5 h-5 animate-spin" /> : <LocateFixed className={`w-5 h-5 ${userCoords ? 'animate-pulse' : ''}`} />}
+                        {userCoords ? 'Ma position est activée' : 'Partager ma position actuelle'}
+                    </button>
+
+                    {userCoords && (
+                        <button
+                            onClick={() => { setUserCoords(null); localStorage.removeItem('user_coords'); }}
+                            className="text-[10px] text-gray-400 font-bold uppercase tracking-widest hover:text-red-500 transition-colors"
+                        >
+                            Désactiver la localisation
+                        </button>
+                    )}
+                </div>
+
+                {error && (
+                    <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 animate-in fade-in slide-in-from-top-2">
+                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
+                        <p className="font-lato text-sm font-semibold">{error}</p>
+                    </div>
+                )}
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -185,7 +270,7 @@ export default function MamaSitterSearch() {
                         </div>
                     ))
                 ) : mamasitters.length > 0 ? (
-                    mamasitters.map((sitter) => (
+                    mamasitters.map((sitter: any) => (
                         <div key={sitter._id} className="bg-white rounded-2xl p-6 shadow-sm border border-vert/10 hover:shadow-md transition-shadow group flex flex-col h-full">
                             <div className="flex gap-4 items-start mb-4">
                                 <div className="w-20 h-20 rounded-full bg-sable/10 flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-transparent group-hover:border-sable transition-colors">
@@ -200,6 +285,11 @@ export default function MamaSitterSearch() {
                                     <div className="flex items-center text-gray-500 font-lato text-sm mb-1">
                                         <MapPin className="w-3.5 h-3.5 mr-1" />
                                         {sitter.city || 'Ville non précisée'} {sitter.postalCode && `(${sitter.postalCode})`}
+                                        {sitter._distance !== undefined && (
+                                            <span className="ml-2 text-[11px] text-sable font-bold bg-sable/10 px-2 py-0.5 rounded-full">
+                                                {sitter._distance} km
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="flex items-center text-sable text-sm font-semibold">
                                         <Star className="w-3.5 h-3.5 fill-current mr-1" />
@@ -217,9 +307,12 @@ export default function MamaSitterSearch() {
                                         {sitter.hourlyRate ? `${sitter.hourlyRate}€ / heure` : 'Sur devis'}
                                     </span>
                                 </div>
-                                <button className="px-4 py-2 bg-vert/10 text-vert hover:bg-vert hover:text-white rounded-full font-semibold text-sm transition-colors">
+                                <a
+                                    href={`#/messages?userId=${sitter._id}`}
+                                    className="px-4 py-2 bg-vert/10 text-vert hover:bg-vert hover:text-white rounded-full font-semibold text-sm transition-colors"
+                                >
                                     Contacter
-                                </button>
+                                </a>
                             </div>
                         </div>
                     ))

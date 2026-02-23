@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { register } from '../services/authService'
+import { Upload, UserCircle, CheckCircle, FileText } from 'lucide-react'
 
 export default function AuthRegister() {
   const [name, setName] = useState('')
@@ -17,6 +18,25 @@ export default function AuthRegister() {
   const [hourlyRate, setHourlyRate] = useState('')
   const [bio, setBio] = useState('')
   const [avatar, setAvatar] = useState('')
+  const [idCard, setIdCard] = useState('')
+  const [avatarName, setAvatarName] = useState('')
+  const [idCardName, setIdCardName] = useState('')
+
+  const handleIdCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Le document est trop volumineux (max 5Mo).");
+        return;
+      }
+      setIdCardName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setIdCard(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -25,6 +45,7 @@ export default function AuthRegister() {
         setError("La photo est trop volumineuse (max 5Mo).");
         return;
       }
+      setAvatarName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatar(reader.result as string);
@@ -69,7 +90,8 @@ export default function AuthRegister() {
         postalCode: role === 'MamaSitter' ? postalCode : undefined,
         hourlyRate: role === 'MamaSitter' ? Number(hourlyRate) : undefined,
         bio: role === 'MamaSitter' ? bio : undefined,
-        avatar: role === 'MamaSitter' ? avatar : undefined
+        avatar: role === 'MamaSitter' ? avatar : undefined,
+        idCard: role === 'MamaSitter' ? idCard : undefined
       })
       setSuccess(true)
     } catch (err: any) {
@@ -253,20 +275,50 @@ export default function AuthRegister() {
                 <div>
                   <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Photo de profil (facultatif)</label>
                   <div className="flex items-center gap-4">
-                    {avatar ? (
-                      <img src={avatar} alt="Aperçu" className="w-16 h-16 rounded-full object-cover border border-gray-200" />
-                    ) : (
-                      <div className="w-16 h-16 rounded-full bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center font-lato">
-                        Avatar
-                      </div>
-                    )}
+                    <div className="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-inner">
+                      {avatar ? (
+                        <img src={avatar} alt="Aperçu" className="w-full h-full object-cover" />
+                      ) : (
+                        <UserCircle className="w-10 h-10 text-gray-200" />
+                      )}
+                    </div>
+                    <label className="flex-grow flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-vert/50 hover:bg-vert/5 transition-all group">
+                      <Upload className="w-4 h-4 text-gray-400 group-hover:text-vert transition-colors" />
+                      <span className="text-sm font-lato text-gray-500 group-hover:text-vert truncate max-w-[150px]">
+                        {avatarName || "Choisir une photo"}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Pièce d'identité (Titre de séjour, Passeport...)</label>
+                  <p className="text-[11px] text-gray-400 mb-2 font-lato">Requis pour validation par l'admin. Votre document reste strictement confidentiel.</p>
+                  <label className="flex items-center gap-3 w-full px-5 py-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-vert/50 hover:bg-vert/5 transition-all group">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:bg-vert/10 transition-colors">
+                      {idCard ? <CheckCircle className="w-5 h-5 text-green-500" /> : <FileText className="w-5 h-5 text-gray-300 group-hover:text-vert" />}
+                    </div>
+                    <div className="flex-grow text-left">
+                      <p className="text-sm font-poppins font-bold text-gray-700 group-hover:text-vert transition-colors truncate max-w-[200px]">
+                        {idCardName || "Sélectionner un document"}
+                      </p>
+                      <p className="text-[10px] text-gray-400 font-lato">
+                        {idCard ? "Document prêt à l'envoi" : "Cliquez pour parcourir vos fichiers"}
+                      </p>
+                    </div>
                     <input
                       type="file"
-                      accept="image/*"
-                      onChange={handleAvatarChange}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-vert/10 file:text-vert hover:file:bg-vert/20 file:cursor-pointer transition"
+                      accept="image/*,.pdf"
+                      onChange={handleIdCardChange}
+                      required={role === 'MamaSitter'}
+                      className="hidden"
                     />
-                  </div>
+                  </label>
                 </div>
               </div>
             )}

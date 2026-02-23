@@ -10,7 +10,7 @@ const router = Router();
 // Inscription avec envoi de mail de vérification
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, role, city, postalCode, bio, hourlyRate, avatar } = req.body;
+    const { email, password, name, role, city, postalCode, bio, hourlyRate, avatar, idCard } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -33,10 +33,23 @@ router.post('/register', async (req, res) => {
     if (city || postalCode) {
       try {
         const query = `${city || ''} ${postalCode || ''}`.trim();
-        const response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=1`);
-        const data: any = await response.json();
+        // Tentative 1 : API France (plus précise pour le pays)
+        let response = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=1`);
+        let data: any = await response.json();
+
         if (data.features && data.features.length > 0) {
           location.coordinates = data.features[0].geometry.coordinates;
+        } else {
+          // Tentative 2 : Nominatim OpenStreetMap (International / Genève)
+          const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+          const nomResponse = await fetch(nominatimUrl, {
+            headers: { 'User-Agent': 'MamSitter-App' }
+          });
+          const nomData: any = await nomResponse.json();
+
+          if (nomData && nomData.length > 0) {
+            location.coordinates = [parseFloat(nomData[0].lon), parseFloat(nomData[0].lat)];
+          }
         }
       } catch (err) {
         console.error('Erreur geocodage inscription:', err);
@@ -55,6 +68,8 @@ router.post('/register', async (req, res) => {
       bio,
       hourlyRate: hourlyRate ? Number(hourlyRate) : 0,
       avatar,
+      idCard: role === 'MamaSitter' ? idCard : undefined,
+      isApproved: role === 'MamaSitter' ? false : true, // Les mamans sont approuvées par défaut, pas les mamasitters
       location
     });
 
@@ -152,6 +167,14 @@ router.post('/login', async (req, res) => {
 
     if (!user.isVerified) {
       return res.status(401).json({ error: 'Merci de confirmer ton email avant de te connecter.' });
+    }
+
+    if (user.role === 'MamaSitter' && !user.isApproved) {
+      return res.status(403).json({ error: 'Ton compte est en cours de validation par l\'administrateur. Tu recevras un email dès que ton profil sera activé.' });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ error: 'Ton compte a été suspendu pour non-respect des conditions d\'utilisation.' });
     }
 
     const token = jwt.sign(

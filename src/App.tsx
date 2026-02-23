@@ -20,6 +20,8 @@ import MamaSitters from './pages/MamaSitters';
 import Contact from './pages/Contact';
 import MamaSitterSearch from './pages/MamaSitterSearch';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
+import Messages from './pages/Messages';
 
 function App() {
   const [route, setRoute] = useState<string>(
@@ -184,6 +186,30 @@ function App() {
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <Profile />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (route === '/admin') {
+    return (
+      <div className="min-h-screen bg-beige/30 flex flex-col">
+        <Navigation />
+        <main className="flex-grow pt-32 pb-12">
+          <AdminDashboard />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (route === '/messages') {
+    return (
+      <div className="min-h-screen bg-beige/30 flex flex-col">
+        <Navigation />
+        <main className="flex-grow pt-32 pb-12">
+          <Messages />
         </main>
         <Footer />
       </div>
