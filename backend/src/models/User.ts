@@ -40,6 +40,13 @@ const userSchema = new mongoose.Schema({
 
   createdAt: { type: Date, default: Date.now },
 
+  // Stripe Connect
+  stripeAccountId: { type: String, default: '' },
+
+  // Paiements hors Stripe (RIB / Virement)
+  rib: { type: String, default: '' },
+  bankInfo: { type: String, default: '' },
+
   // Bannissement
   isBanned: { type: Boolean, default: false },
   bannedAt: { type: Date },
