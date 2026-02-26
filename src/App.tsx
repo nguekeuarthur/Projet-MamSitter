@@ -23,6 +23,7 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import Messages from './pages/Messages';
 import ServicesPage from './pages/Services';
+import BookingSuccess from './pages/BookingSuccess';
 
 function App() {
   const [route, setRoute] = useState<string>(
@@ -99,7 +100,7 @@ function App() {
 
   if (route === '/mentions-legales') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <MentionsLegales />
@@ -111,7 +112,7 @@ function App() {
 
   if (route === '/cgv') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <CGV />
@@ -123,7 +124,7 @@ function App() {
 
   if (route === '/politique-confidentialite') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <PolitiqueConfidentialite />
@@ -135,7 +136,7 @@ function App() {
 
   if (route === '/concept') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <Concept />
@@ -147,7 +148,7 @@ function App() {
 
   if (route === '/mamasitters') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <MamaSitters />
@@ -159,7 +160,7 @@ function App() {
 
   if (route === '/contact') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <Contact />
@@ -171,7 +172,7 @@ function App() {
 
   if (route === '/search') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <MamaSitterSearch />
@@ -183,7 +184,7 @@ function App() {
 
   if (route === '/profile') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <Profile />
@@ -195,7 +196,7 @@ function App() {
 
   if (route === '/admin') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <AdminDashboard />
@@ -207,7 +208,7 @@ function App() {
 
   if (route === '/messages') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow pt-32 pb-12">
           <Messages />
@@ -217,9 +218,21 @@ function App() {
     )
   }
 
+  if (route === '/booking-success') {
+    return (
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
+        <Navigation />
+        <main className="flex-grow">
+          <BookingSuccess />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   if (route === '/services') {
     return (
-      <div className="min-h-screen bg-beige/30 flex flex-col">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
         <Navigation />
         <main className="flex-grow">
           <ServicesPage />
@@ -229,7 +242,7 @@ function App() {
     )
   }
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#FAF7F2]">
       <Navigation />
       <Hero />
       <Services />

@@ -1,68 +1,174 @@
-import { Star, Ribbon, Users } from 'lucide-react';
+import { Star, Heart, Shield, Sparkles, Check, Coffee, Utensils, ArrowRight } from 'lucide-react';
+
+const coreValues = [
+    {
+        icon: Heart,
+        title: 'Soutien Maman',
+        description: "Prioriser votre bien-être pour un foyer équilibré.",
+        details: ["Temps de sommeil garanti", "Récupération physique", "Écoute bienveillante"]
+    },
+    {
+        icon: Coffee,
+        title: 'Relais Bébé',
+        description: "Une présence douce et experte pour votre nouveau-né.",
+        details: ["Aide aux soins", "Relais biberon/change", "Éveil en douceur"]
+    },
+    {
+        icon: Utensils,
+        title: 'Relais Logistique',
+        description: "Libérer votre esprit des tâches quotidiennes.",
+        details: ["Repas sains", "Entretien d'appoint", "Organisation"]
+    },
+    {
+        icon: Sparkles,
+        title: 'Transmission',
+        description: "Des conseils pour prendre confiance sereinement.",
+        details: ["Astuces quotidiennes", "Soutien allaitement", "Accompagnement"]
+    }
+];
 
 export default function MamaSitters() {
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mb-12">
-            <div className="text-center mb-16">
-                <h1 className="text-4xl sm:text-5xl font-bold text-vert font-poppins mb-6 uppercase tracking-wide">
-                    Nos MamaSitters
-                </h1>
-                <p className="text-xl text-gray-600 font-lato max-w-3xl mx-auto leading-relaxed">
-                    À mi-chemin entre nounou, fée du logis, doula post-natale et grande sœur,
-                    qui sont les femmes exceptionnelles constituant la communauté MamSitter ?
-                </p>
-            </div>
+        <div className="min-h-screen bg-[#FAF7F2]">
+            {/* Hero & Selection Grid - Combined for a more dynamic feel */}
+            <section className="relative pt-8 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                {/* Soft blur background */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sable/5 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
-            <div className="bg-beige/40 rounded-3xl p-8 sm:p-12 shadow-sm mb-16">
-                <div className="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <img
-                            src="https://images.pexels.com/photos/1018695/pexels-photo-1018695.jpeg?auto=compress&cs=tinysrgb&w=800"
-                            alt="Profil MamaSitter"
-                            className="rounded-full shadow-lg border-4 border-white w-full h-auto object-cover max-w-md mx-auto aspect-square"
-                        />
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+
+                        {/* Left Content: Hero Text */}
+                        <div className="text-left max-w-2xl">
+                            <div className="inline-flex items-center space-x-2 bg-white/40 backdrop-blur-sm px-5 py-2 rounded-full border border-sable/10 mb-8 shadow-sm">
+                                <Star className="w-3.5 h-3.5 text-sable fill-sable" />
+                                <span className="text-[10px] font-black text-sable uppercase tracking-[0.2em]">Des profils d'exception</span>
+                            </div>
+
+                            <h1 className="text-4xl md:text-6xl font-bold text-vert mb-8 font-poppins leading-tight tracking-tight">
+                                Bien plus que des nounous, <br />
+                                <span className="text-sable italic font-light">vos alliées de l'ombre.</span>
+                            </h1>
+
+                            <p className="text-lg md:text-xl text-vert/60 font-poppins font-light leading-relaxed mb-10">
+                                Découvrez les femmes qui veillent sur votre équilibre, entre expertise bienveillante et soutien quotidien.
+                            </p>
+
+                            <div className="flex flex-wrap gap-4">
+                                <button className="bg-vert text-white px-8 py-4 rounded-2xl font-bold text-sm hover:translate-y-[-2px] transition-all shadow-lg shadow-vert/10 uppercase tracking-widest">
+                                    Trouver ma MamaSitter
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Right Content: Selection Grid */}
+                        <div className="space-y-8">
+                            <div className="mb-10 text-center">
+                                <h2 className="text-2xl md:text-3xl font-bold text-vert font-poppins mb-4">
+                                    Une sélection <span className="text-sable italic">haute exigence</span>
+                                </h2>
+                                <p className="text-sm text-vert/60 font-poppins font-light leading-relaxed max-w-md mx-auto">
+                                    Nous sélectionnons uniquement des profils justifiant d'une expérience concrète et d'une motivation profonde.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-6">
+                                {[
+                                    { title: "Puéricultrices", desc: "Le savoir-faire médical et la douceur du métier." },
+                                    { title: "Mères accomplies", desc: "L'expérience irremplaçable d'avoir déjà traversé cette étape." },
+                                    { title: "Auxiliaires", desc: "Le professionnalisme au service de votre foyer." }
+                                ].map((type, i) => (
+                                    <div key={i} className="flex gap-6 bg-white/50 backdrop-blur-sm p-6 rounded-[32px] border border-white/60 hover:bg-white transition-all duration-300 group">
+                                        <div className="w-12 h-12 rounded-2xl bg-sable/10 flex items-center justify-center shrink-0 group-hover:bg-sable transition-all">
+                                            <Check className="w-5 h-5 text-sable group-hover:text-white" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-lg font-bold text-vert font-poppins mb-1">{type.title}</h4>
+                                            <p className="text-sm text-vert/50 font-poppins leading-relaxed">{type.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
                     </div>
-                    <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-sable font-poppins uppercase">
-                            Une sélection rigoureuse et bienveillante
+                </div>
+            </section>
+
+            {/* The Missions - Elegant & Minimal Grid */}
+            <section className="py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl font-bold text-vert mb-6 font-poppins tracking-tight">
+                            Quelles sont ses <span className="text-sable italic">missions ?</span>
                         </h2>
-                        <p className="text-gray-700 font-lato leading-relaxed">
-                            Nous portons une attention toute particulière aux profils retenus sur notre plateforme. Ce ne sont pas des prestataires de santé ni des expertes médicales, mais des auxiliaires expérimentées : puéricultrices retraitées, mères accomplies, gardes d'enfants en bas âge certifiées.
-                        </p>
-                        <ul className="space-y-4">
-                            <li className="flex items-center space-x-3 text-vert font-lato font-semibold">
-                                <Star className="text-sable w-6 h-6" />
-                                <span>Expérience ou certification post-partum validée</span>
-                            </li>
-                            <li className="flex items-center space-x-3 text-vert font-lato font-semibold">
-                                <Ribbon className="text-sable w-6 h-6" />
-                                <span>Validation du casier judiciaire</span>
-                            </li>
-                            <li className="flex items-center space-x-3 text-vert font-lato font-semibold">
-                                <Users className="text-sable w-6 h-6" />
-                                <span>Formation interne MamSitter suivie avec succès</span>
-                            </li>
-                        </ul>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {coreValues.map((value, i) => {
+                            const Icon = value.icon;
+                            return (
+                                <div key={i} className="group p-8 rounded-[40px] hover:bg-white/40 transition-all duration-500">
+                                    <div className="w-12 h-12 rounded-2xl bg-beige flex items-center justify-center mb-6 border border-sable/5 group-hover:bg-white group-hover:scale-110 transition-all">
+                                        <Icon className="w-6 h-6 text-sable" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-vert font-poppins mb-3">{value.title}</h3>
+                                    <p className="text-sm text-vert/60 font-poppins leading-relaxed mb-6">
+                                        {value.description}
+                                    </p>
+                                    <ul className="space-y-2">
+                                        {value.details.map((detail, idx) => (
+                                            <li key={idx} className="flex items-center gap-2 text-[10px] font-black text-sable uppercase tracking-wider">
+                                                <div className="w-1 h-1 rounded-full bg-sable/30"></div>
+                                                {detail}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div className="text-center bg-sable rounded-3xl p-8 sm:p-16 text-white shadow-md">
-                <h2 className="text-3xl font-bold font-poppins mb-6 uppercase">
-                    Vous souhaitez rejoindre l'aventure ?
-                </h2>
-                <p className="text-lg font-lato mb-8 max-w-2xl mx-auto">
-                    Devenez l'alliée dont vous auriez rêvé, et apportez sérénité et réconfort dans le foyer des jeunes parents.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="#/register" className="bg-white text-sable px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-beige transition-colors">
-                        Créer mon compte
-                    </a>
-                    <a href="#become-sitter" className="bg-transparent border-2 border-white px-8 py-4 rounded-full font-bold uppercase tracking-wide hover:bg-white/10 transition-colors">
-                        En savoir plus
-                    </a>
+            {/* Trust Section - Transparent & Light */}
+            <section className="py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-5xl mx-auto text-center border-t border-sable/10 pt-12">
+                    <div className="inline-flex items-center gap-2 bg-sable/5 px-4 py-1.5 rounded-full mb-8">
+                        <Shield className="w-3.5 h-3.5 text-sable" />
+                        <span className="text-[10px] font-black text-sable uppercase tracking-[0.2em]">Confiance & Engagement</span>
+                    </div>
+
+                    <h2 className="text-3xl md:text-5xl font-bold text-vert mb-12 font-poppins leading-tight">
+                        Une charte rigoureuse <br />
+                        <span className="text-sable italic font-light">pour votre sérénité.</span>
+                    </h2>
+
+                    <div className="grid md:grid-cols-3 gap-12 mb-16 max-w-4xl mx-auto">
+                        {[
+                            { title: "Identité Vérifiée", desc: "Pièce d'identité et casier judiciaire systématique." },
+                            { title: "Recommandations", desc: "Profils validés par d'anciens employeurs." },
+                            { title: "Formation", desc: "Accès à des formations spécifiques post-partum." }
+                        ].map((item, i) => (
+                            <div key={i} className="space-y-3">
+                                <h5 className="font-bold text-sable uppercase tracking-widest text-[10px]">{item.title}</h5>
+                                <p className="text-sm text-vert/60 font-poppins font-light leading-relaxed">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <button className="bg-vert text-white px-8 py-4 rounded-2xl font-bold text-sm hover:translate-y-[-2px] transition-all shadow-lg shadow-vert/10 uppercase tracking-widest">
+                            Trouver ma MamaSitter
+                        </button>
+                        <button className="text-vert/40 hover:text-vert font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2">
+                            Devenir MamaSitter <ArrowRight className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </section>
+
+            <div className="h-20"></div>
         </div>
     );
 }
