@@ -1,62 +1,83 @@
-import { motion } from "framer-motion"
-import { FaStar } from "react-icons/fa"
+import { Star, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    name: "Camille",
-    city: "Lyon",
-    text: "Un accompagnement précieux, humain et rassurant.",
-    rating: 5
+    name: 'Sophie Martin',
+    location: 'Paris',
+    rating: 5,
+    text: "Ma MamaSitter a été d'un soutien incroyable pendant mes premières semaines. Elle m'a aidée à prendre confiance en moi et m'a donné des conseils précieux. Je recommande à 100% !",
+    image: 'https://images.pexels.com/photos/3768894/pexels-photo-3768894.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: "Sarah",
-    city: "Paris",
-    text: "MamSitter m’a énormément aidée après mon accouchement.",
-    rating: 5
+    name: 'Laura Dubois',
+    location: 'Genève',
+    rating: 5,
+    text: "Le forfait Sérénité m'a littéralement sauvé la vie. Avoir quelqu'un qui s'occupe des repas et du ménage pendant que je me reposais avec bébé : un luxe indispensable !",
+    image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: "Inès",
-    city: "Genève",
-    text: "Des conseils concrets et beaucoup de douceur. Je recommande.",
-    rating: 5
+    name: 'Emma Rousseau',
+    location: 'Lyon',
+    rating: 5,
+    text: "J'ai opté pour le forfait Douce Nuit après une semaine épuisante. Pouvoir dormir une nuit complète m'a redonné de l'énergie. Service professionnel et bienveillant.",
+    image: 'https://images.pexels.com/photos/3755511/pexels-photo-3755511.jpeg?auto=compress&cs=tinysrgb&w=200'
   }
-]
+];
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="bg-white py-24 px-6">
-      <h2 className="text-3xl font-bold text-center text-green">
-        Elles nous font confiance
-      </h2>
+    <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-vert font-poppins uppercase tracking-wide">
+            Elles nous font confiance
+          </h2>
+          <p className="text-xl max-w-2xl mx-auto text-vert/70 font-poppins">
+            Découvrez les expériences de mamans qui ont été accompagnées par nos MamaSitters.
+          </p>
+        </div>
 
-      <div className="mt-16 max-w-5xl mx-auto grid md:grid-cols-3 gap-10">
-        {testimonials.map((t, index) => (
-          <motion.div
-            key={index}
-            className="bg-beige p-8 rounded-3xl shadow hover:scale-105 transition-transform duration-300"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.2, duration: 0.5 }}
-          >
-            <p className="italic text-gray-700 leading-relaxed">
-              “{t.text}”
-            </p>
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <div
+              key={index}
+              className="rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow relative bg-beige"
+            >
+              <Quote className="absolute top-6 right-6 w-12 h-12 text-sable opacity-30" />
 
-            <div className="flex items-center mt-4">
-              <div className="w-12 h-12 rounded-full bg-sand text-white flex items-center justify-center font-bold mr-3">
-                {t.name[0]}
-              </div>
-              <div>
-                <div className="flex text-yellow-400">
-                  {Array(t.rating).fill(0).map((_, i) => <FaStar key={i} className="w-4 h-4"/>)}
+              <div className="flex items-center space-x-4 mb-6">
+                <img
+                  src={testimonial.image}
+                  alt={testimonial.name}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md"
+                />
+                <div>
+                  <h4 className="font-bold text-sable font-poppins">{testimonial.name}</h4>
+                  <p className="text-sm text-vert/70">{testimonial.location}</p>
                 </div>
-                <p className="font-semibold">{t.name} – {t.city}</p>
               </div>
+
+              <div className="flex space-x-1 mb-4">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+
+              <p className="leading-relaxed relative z-10 text-vert/80 font-poppins">
+                "{testimonial.text}"
+              </p>
             </div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center space-x-2">
+            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+            <span className="font-semibold text-sable">4.9/5</span>
+            <span className="text-vert/70">basé sur 320+ avis</span>
+          </div>
+        </div>
       </div>
     </section>
-  )
+  );
 }
