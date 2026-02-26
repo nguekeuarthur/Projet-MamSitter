@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Camera, Loader2, MapPin, Euro, FileText, User } from 'lucide-react';
-import { getUserProfile, updateProfile, MamaSitter } from '../services/userService';
+import { Camera, Loader2, MapPin, Euro, FileText, User, CreditCard, ShieldCheck } from 'lucide-react';
+import { getUserProfile, updateProfile, MamaSitter, fetchStripeStatus, createStripeAccountLink } from '../services/userService';
 import { getCurrentUser } from '../services/authService';
 
 export default function Profile() {
@@ -17,6 +17,10 @@ export default function Profile() {
     const [bio, setBio] = useState('');
     const [hourlyRate, setHourlyRate] = useState<number | string>('');
     const [avatar, setAvatar] = useState('');
+    const [rib, setRib] = useState('');
+    const [bankInfo, setBankInfo] = useState('');
+    const [stripeStatus, setStripeStatus] = useState<any>(null);
+    const [stripeLoading, setStripeLoading] = useState(false);
 
     useEffect(() => {
         async function loadData() {
@@ -35,6 +39,14 @@ export default function Profile() {
                 setBio(profileData.bio || '');
                 setHourlyRate(profileData.hourlyRate || '');
                 setAvatar(profileData.avatar || '');
+                setRib(profileData.rib || '');
+                setBankInfo(profileData.bankInfo || '');
+
+                if (profileData.role === 'MamaSitter') {
+                    const status = await fetchStripeStatus();
+                    setStripeStatus(status);
+                }
+
                 setLoading(false);
             } catch (err) {
                 window.location.hash = '#/login';
@@ -42,6 +54,17 @@ export default function Profile() {
         }
         loadData();
     }, []);
+
+    const handleConnectStripe = async () => {
+        setStripeLoading(true);
+        try {
+            const { url } = await createStripeAccountLink();
+            window.location.href = url;
+        } catch (err: any) {
+            setError(err.message || "Erreur lors de la connexion à Stripe");
+            setStripeLoading(false);
+        }
+    };
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -74,6 +97,8 @@ export default function Profile() {
             };
             if (user?.role === 'MamaSitter') {
                 updates.hourlyRate = Number(hourlyRate);
+                updates.rib = rib;
+                updates.bankInfo = bankInfo;
             }
 
             await updateProfile(updates);
@@ -221,6 +246,73 @@ export default function Profile() {
                                         placeholder="Présentez-vous, décrivez votre expérience et ce que vous proposez aux mamans..."
                                     />
                                     <p className="text-xs text-gray-400 mt-2 font-lato text-right">{bio.length} caractères</p>
+                                </div>
+
+                                <h3 className="font-poppins font-bold text-lg text-vert border-b border-gray-100 pb-2 mt-8">Informations de Paiement</h3>
+                                <p className="text-xs text-gray-500 font-lato mb-4">
+                                    Ces informations ne sont visibles que par l'administration pour effectuer vos virements.
+                                </p>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">RIB / IBAN</label>
+                                    <input
+                                        type="text"
+                                        value={rib}
+                                        onChange={(e) => setRib(e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato"
+                                        placeholder="Format IBAN recommandé"
+                                    />
+                                </div>
+
+                                {/* Section Stripe Connect */}
+                                <div className="mt-8 p-6 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+                                            <CreditCard className="w-5 h-5 text-indigo-600" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-poppins font-bold text-gray-800">Stripe Connect</h4>
+                                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest italic">Paiement Automatique (Optionnel)</p>
+                                        </div>
+                                    </div>
+
+                                    {stripeStatus?.connected && stripeStatus?.payouts_enabled ? (
+                                        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
+                                            <ShieldCheck className="w-5 h-5 text-green-600" />
+                                            <div>
+                                                <p className="text-sm font-bold text-green-700">Compte Stripe Connecté</p>
+                                                <p className="text-xs text-green-600/80">Votre compte est prêt à recevoir des paiements automatiques.</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <p className="text-sm text-gray-600 font-lato leading-relaxed">
+                                                En connectant votre compte Stripe, vous recevrez votre part (73%) <b>instantanément et automatiquement</b> à chaque réservation.
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={handleConnectStripe}
+                                                disabled={stripeLoading}
+                                                className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 disabled:opacity-50"
+                                            >
+                                                {stripeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Connecter à Stripe'}
+                                            </button>
+                                            <p className="text-[10px] text-center text-gray-400 font-medium">
+                                                Vous serez redirigée vers le portail sécurisé de Stripe pour finaliser votre inscription.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">Autres infos bancaires (SWIFT, Nom Banque...)</label>
+                                    <textarea
+                                        value={bankInfo}
+                                        onChange={(e) => setBankInfo(e.target.value)}
+                                        rows={2}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato resize-none"
+                                        placeholder="Ex: BIC/SWIFT, Nom de la banque..."
+                                    />
                                 </div>
                             </div>
                         )}
