@@ -11,6 +11,10 @@ export interface MamaSitter {
     bio: string;
     hourlyRate: number;
     avatar: string;
+    rib?: string;
+    bankInfo?: string;
+    isApproved?: boolean;
+    isBanned?: boolean;
 }
 
 export async function searchMamaSitters(filters: { city?: string; postalCode?: string; lat?: number; lng?: number; radius?: number }) {
@@ -130,6 +134,48 @@ export async function banUser(userId: string, ban: boolean) {
     if (!response.ok) {
         if (response.status === 401) window.dispatchEvent(new CustomEvent('auth-error-401'));
         throw new Error('Erreur lors de l’opération.');
+    }
+    return response.json();
+}
+
+export async function adminUpdateUser(userId: string, updates: any) {
+    const response = await fetch(`${API_URL}/users/${userId}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify(updates),
+    });
+    if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour par l admin.');
+    }
+    return response.json();
+}
+
+export async function fetchUserBankDetails(userId: string) {
+    const response = await fetch(`${API_URL}/users/${userId}/bank-details`, {
+        method: 'GET',
+        headers: authHeaders(),
+    });
+    if (!response.ok) {
+        throw new Error('Erreur lors de la récupération du RIB.');
+    }
+    return response.json();
+}
+
+export async function fetchStripeStatus() {
+    const response = await fetch(`${API_URL}/users/stripe-status`, {
+        method: 'GET',
+        headers: authHeaders(),
+    });
+    return response.json();
+}
+
+export async function createStripeAccountLink() {
+    const response = await fetch(`${API_URL}/users/create-stripe-account`, {
+        method: 'POST',
+        headers: authHeaders(),
+    });
+    if (!response.ok) {
+        throw new Error('Erreur lors de la création du lien Stripe');
     }
     return response.json();
 }

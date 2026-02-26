@@ -1,25 +1,62 @@
 import { useState, useEffect } from 'react';
 import {
-    CheckCircle, XCircle, Eye, Loader2, ShieldCheck, Mail, MapPin,
-    UserCheck, AlertTriangle, Ban, Unlock, MessageSquareWarning,
-    ShieldAlert, UserX, History, Search
+    CheckCircle, XCircle, Eye, EyeOff, Loader2, ShieldCheck, Mail, MapPin,
+    UserCheck, AlertTriangle, Ban, History, Search, Receipt, Banknote, Save, ChevronRight, MessageSquareWarning, Copy, Check
 } from 'lucide-react';
 import {
-    fetchPendingSitters, approveSitter, fetchAllSitters, banUser
+    fetchPendingSitters, approveSitter, fetchAllSitters, banUser, adminUpdateUser, fetchUserBankDetails
 } from '../services/userService';
 import { fetchFlaggedMessages } from '../services/messageService';
+import { fetchAllBookings } from '../services/bookingService';
 import { getCurrentUser } from '../services/authService';
 
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<'pending' | 'all' | 'flagged'>('pending');
+    const [activeTab, setActiveTab] = useState<'pending' | 'all' | 'flagged' | 'transactions'>('pending');
     const [sitters, setSitters] = useState<any[]>([]);
     const [allSitters, setAllSitters] = useState<any[]>([]);
     const [flaggedMessages, setFlaggedMessages] = useState<any[]>([]);
+    const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [message, setMessage] = useState('');
     const [selectedIdCard, setSelectedIdCard] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [editingRib, setEditingRib] = useState<string | null>(null);
+    const [ribValue, setRibValue] = useState('');
+    const [revealedRibs, setRevealedRibs] = useState<{ [key: string]: string }>({});
+    const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    const toggleRib = async (userId: string) => {
+        if (revealedRibs[userId]) {
+            const newRevealed = { ...revealedRibs };
+            delete newRevealed[userId];
+            setRevealedRibs(newRevealed);
+        } else {
+            try {
+                const data = await fetchUserBankDetails(userId);
+                setRevealedRibs(prev => ({ ...prev, [userId]: data.rib || 'Non renseigné' }));
+            } catch (err) {
+                setMessage('Erreur lors de la récupération du RIB sécurisé.');
+            }
+        }
+    };
+
+    const copyRibToClipboard = async (userId: string) => {
+        try {
+            let rib = revealedRibs[userId];
+            if (!rib) {
+                const data = await fetchUserBankDetails(userId);
+                rib = data.rib;
+            }
+            if (rib) {
+                await navigator.clipboard.writeText(rib);
+                setCopiedId(userId);
+                setTimeout(() => setCopiedId(null), 2000);
+            }
+        } catch (err) {
+            setMessage('Erreur lors de la copie du RIB.');
+        }
+    };
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean,
@@ -57,6 +94,9 @@ export default function AdminDashboard() {
             } else if (activeTab === 'flagged') {
                 const data = await fetchFlaggedMessages();
                 setFlaggedMessages(data);
+            } else if (activeTab === 'transactions') {
+                const data = await fetchAllBookings();
+                setBookings(data);
             }
         } catch (err) {
             setMessage('Erreur lors du chargement des données.');
@@ -133,14 +173,15 @@ export default function AdminDashboard() {
                     {[
                         { id: 'pending', label: 'En attente', icon: History, count: sitters.length },
                         { id: 'all', label: 'Communauté', icon: UserCheck },
+                        { id: 'transactions', label: 'Finance', icon: Receipt },
                         { id: 'flagged', label: 'Signalements', icon: MessageSquareWarning, count: flaggedMessages.length }
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-poppins font-bold text-sm transition-all whitespace-nowrap ${activeTab === tab.id
-                                    ? 'bg-vert text-white shadow-md'
-                                    : 'text-gray-400 hover:text-vert hover:bg-vert/5'
+                                ? 'bg-vert text-white shadow-md'
+                                : 'text-gray-400 hover:text-vert hover:bg-vert/5'
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -202,9 +243,9 @@ export default function AdminDashboard() {
 
                     <div className="grid gap-4">
                         {filteredAllSitters.map((sitter) => (
-                            <div key={sitter._id} className="bg-white p-5 rounded-2xl border border-gray-100 flex items-center justify-between group">
+                            <div key={sitter._id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 group">
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold overflow-hidden ${sitter.isBanned ? 'bg-red-50 text-red-300' : 'bg-beige text-sable'}`}>
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-bold overflow-hidden ${sitter.isBanned ? 'bg-red-50 text-red-300' : 'bg-beige text-sable'}`}>
                                         {sitter.avatar ? <img src={sitter.avatar} className="w-full h-full object-cover" /> : sitter.name[0]}
                                     </div>
                                     <div>
@@ -216,20 +257,69 @@ export default function AdminDashboard() {
                                         <p className="text-sm text-gray-400 font-lato">{sitter.email} • {sitter.city}</p>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    {sitter.isBanned ? (
-                                        <button
-                                            onClick={() => handleAction('unban', sitter._id, sitter.name)}
-                                            className="p-3 text-green-500 hover:bg-green-50 rounded-xl transition-colors" title="Réactiver">
-                                            <Unlock className="w-5 h-5" />
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleAction('ban', sitter._id, sitter.name)}
-                                            className="p-3 text-red-400 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100" title="Bannir">
-                                            <Ban className="w-5 h-5" />
-                                        </button>
-                                    )}
+                                <div className="flex flex-col md:items-end gap-2">
+                                    <div className="flex items-center gap-3">
+                                        {editingRib === sitter._id ? (
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={ribValue}
+                                                    onChange={(e) => setRibValue(e.target.value)}
+                                                    className="text-xs border rounded px-2 py-1 font-mono focus:border-sable outline-none"
+                                                    placeholder="Nouveau RIB/IBAN"
+                                                />
+                                                <button
+                                                    onClick={async () => {
+                                                        await adminUpdateUser(sitter._id, { rib: ribValue });
+                                                        setEditingRib(null);
+                                                        loadData();
+                                                        setMessage('RIB mis à jour avec succès.');
+                                                    }}
+                                                    className="p-1.5 bg-vert text-white rounded-lg"><Save className="w-3 h-3" /></button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 text-xs">
+                                                <span className="text-gray-400 uppercase font-bold tracking-tighter">RIB:</span>
+                                                <span className="font-mono text-gray-600 bg-gray-50 px-2 py-0.5 rounded select-all">
+                                                    {revealedRibs[sitter._id] || '•••• •••• •••• ••••'}
+                                                </span>
+                                                <button
+                                                    onClick={() => toggleRib(sitter._id)}
+                                                    className="p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-sable transition-colors"
+                                                >
+                                                    {revealedRibs[sitter._id] ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                                </button>
+                                                <button
+                                                    onClick={() => copyRibToClipboard(sitter._id)}
+                                                    className={`p-1 rounded transition-all ${copiedId === sitter._id ? 'text-green-500 bg-green-50' : 'text-gray-400 hover:text-sable hover:bg-gray-100'}`}
+                                                    title="Copier le RIB"
+                                                >
+                                                    {copiedId === sitter._id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingRib(sitter._id);
+                                                        setRibValue(revealedRibs[sitter._id] || '');
+                                                    }}
+                                                    className="text-sable hover:underline font-bold ml-1">Modifier</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {sitter.isBanned ? (
+                                            <button
+                                                onClick={() => handleAction('unban', sitter._id, sitter.name)}
+                                                className="px-4 py-2 bg-green-50 text-green-500 rounded-xl font-bold text-xs" title="Réactiver">
+                                                Réactiver le compte
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleAction('ban', sitter._id, sitter.name)}
+                                                className="px-4 py-2 bg-red-50 text-red-400 rounded-xl font-bold text-xs opacity-0 group-hover:opacity-100 transition-all" title="Bannir">
+                                                Bannir
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -237,48 +327,95 @@ export default function AdminDashboard() {
                 </div>
             )}
 
-            {/* --- Tab: FLAGGED MESSAGES --- */}
-            {activeTab === 'flagged' && (
+            {/* --- Tab: TRANSACTIONS --- */}
+            {activeTab === 'transactions' && (
                 <div className="space-y-6">
-                    {flaggedMessages.length === 0 ? (
-                        <EmptyState icon={ShieldAlert} title="Aucun signalement" text="Toutes les conversations sont conformes aux règles." />
-                    ) : (
-                        <div className="grid gap-6">
-                            {flaggedMessages.map((msg) => (
-                                <div key={msg._id} className="bg-white rounded-3xl border-2 border-orange-100 overflow-hidden">
-                                    <div className="bg-orange-50 px-6 py-4 border-b border-orange-100 flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-orange-700 font-bold">
-                                            <ShieldAlert className="w-5 h-5" />
-                                            Tentative d'échange de coordonnées détectée
-                                        </div>
-                                        <span className="text-xs text-orange-400 font-lato">{new Date(msg.createdAt).toLocaleString()}</span>
-                                    </div>
-                                    <div className="p-6">
-                                        <div className="flex flex-col md:flex-row gap-8 mb-6">
-                                            <div className="flex-1">
-                                                <span className="block text-[10px] uppercase font-black text-gray-400 mb-2 tracking-widest">Expéditeur</span>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="text-sm font-bold text-gray-800">{msg.sender.name}</div>
-                                                    <div className="text-xs text-gray-400">({msg.sender.role})</div>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleAction('ban', msg.sender._id, msg.sender.name)}
-                                                    className="mt-3 text-xs text-red-500 font-bold flex items-center gap-1 hover:underline">
-                                                    <UserX className="w-3 h-3" /> Bannir l'expéditeur
-                                                </button>
-                                            </div>
-                                            <div className="flex-1">
-                                                <span className="block text-[10px] uppercase font-black text-gray-400 mb-2 tracking-widest">Message Bloqué</span>
-                                                <div className="p-4 bg-gray-50 rounded-2xl text-gray-600 font-lato italic text-sm">
-                                                    "{msg.originalContent}"
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                    <div className="bg-white p-6 rounded-[32px] border border-gray-100 mb-8 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
+                                <Banknote className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-800">Volume Total</h3>
+                                <p className="text-gray-400 text-sm">Vue d'ensemble des flux financiers</p>
+                            </div>
                         </div>
-                    )}
+                        <div className="text-right">
+                            <div className="text-2xl font-black text-vert">
+                                {bookings.filter(b => b.status === 'paid').reduce((acc, b) => acc + b.amount, 0).toLocaleString()} €
+                            </div>
+                            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Commission platforme : {bookings.filter(b => b.status === 'paid').reduce((acc, b) => acc + (b.splitAdminAmount || 0), 0).toLocaleString()} €</p>
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4">
+                        {bookings.length === 0 ? (
+                            <EmptyState icon={Receipt} title="Aucune transaction" text="Les premiers paiements apparaîtront ici." />
+                        ) : (
+                            bookings.map((booking) => (
+                                <div key={booking._id} className="bg-white rounded-3xl border border-gray-100 overflow-hidden hover:shadow-md transition-all">
+                                    <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 bg-beige rounded-full flex items-center justify-center text-sable font-bold">
+                                                {booking.mamanId?.name?.[0]}
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-gray-800">{booking.mamanId?.name}</div>
+                                                <div className="text-xs text-gray-400">Pour le forfait <span className="text-sable font-bold">{booking.packageName}</span></div>
+                                            </div>
+                                            <ChevronRight className="w-4 h-4 text-gray-200 hidden md:block" />
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-vert/5 flex items-center justify-center text-vert text-[10px] font-bold">
+                                                    MS
+                                                </div>
+                                                <div className="text-sm font-medium text-gray-700">{booking.sitterId?.name}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-8">
+                                            <div className="text-right">
+                                                <div className="font-black text-gray-800">{booking.amount}{booking.currency === 'EUR' ? '€' : 'CHF'}</div>
+                                                <div className="text-[10px] text-gray-400 font-bold">Admin: {booking.splitAdminAmount?.toFixed(2)}{booking.currency === 'EUR' ? '€' : 'CHF'}</div>
+                                            </div>
+                                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${booking.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                                {booking.status === 'paid' ? 'Payé' : 'En attente'}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {booking.status === 'paid' && (
+                                        <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex flex-wrap items-center gap-x-12 gap-y-4">
+                                            <div className="flex items-center gap-2">
+                                                <Banknote className="w-4 h-4 text-gray-400" />
+                                                <div className="text-xs flex items-center gap-2">
+                                                    <span className="text-gray-400 mr-2 uppercase tracking-tighter font-bold">RIB MamaSitter:</span>
+                                                    <span className="font-mono text-gray-700">
+                                                        {revealedRibs[booking.sitterId?._id] || '•••• •••• •••• ••••'}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => toggleRib(booking.sitterId?._id)}
+                                                        className="p-1 hover:bg-white rounded text-gray-400 hover:text-sable transition-colors"
+                                                    >
+                                                        {revealedRibs[booking.sitterId?._id] ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => copyRibToClipboard(booking.sitterId?._id)}
+                                                        className={`p-1 rounded transition-all ${copiedId === booking.sitterId?._id ? 'text-green-500 bg-green-50' : 'text-gray-400 hover:text-sable hover:bg-white'}`}
+                                                        title="Copier le RIB"
+                                                    >
+                                                        {copiedId === booking.sitterId?._id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="text-xs">
+                                                <span className="text-gray-400 mr-2 uppercase tracking-tighter font-bold">ID Transaction:</span>
+                                                <span className="text-gray-500">{booking.paymentIntentId || booking.stripeSessionId}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )))}
+                    </div>
                 </div>
             )}
 
@@ -330,7 +467,7 @@ export default function AdminDashboard() {
                             <button
                                 onClick={executeConfirmAction}
                                 className={`w-full py-4 font-poppins font-bold rounded-2xl shadow-lg transition-all active:scale-95 ${confirmModal.type === 'approve' ? 'bg-vert text-white shadow-vert/20' :
-                                        confirmModal.type === 'ban' ? 'bg-red-500 text-white shadow-red-200' : 'bg-green-500 text-white shadow-green-200'
+                                    confirmModal.type === 'ban' ? 'bg-red-500 text-white shadow-red-200' : 'bg-green-500 text-white shadow-green-200'
                                     }`}
                             >
                                 Confirmer l'action
