@@ -1,9 +1,30 @@
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Search, Gift } from 'lucide-react';
 
 export default function Hero() {
   return (
     <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-beige">
+      <div className="bg-white py-12 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 mb-16">
+        <div className="max-w-7xl mx-auto">
+          {/* Quick Action Buttons */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <a href="#/mamasitters" className="flex items-center space-x-2 bg-vert/80 hover:bg-vert text-white px-6 py-3 rounded-full transition-colors font-semibold cursor-pointer">
+              <Search className="w-5 h-5" />
+              <span>TROUVER MA MAMASITTER</span>
+            </a>
+            <a href="#/services?currency=EUR" className="flex items-center space-x-2 bg-vert/80 hover:bg-vert text-white px-6 py-3 rounded-full transition-colors font-semibold cursor-pointer">
+              <Gift className="w-5 h-5" />
+              <span>EUR - NOS COFFRETS</span>
+            </a>
+            <a href="#/services?currency=CHF" className="flex items-center space-x-2 bg-vert/80 hover:bg-vert text-white px-6 py-3 rounded-full transition-colors font-semibold cursor-pointer">
+              <Gift className="w-5 h-5" />
+              <span>CHF - NOS COFFRETS</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto">
+
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-sable/30">

@@ -4,7 +4,7 @@ const packages = [
   {
     name: 'Douceur',
     icon: Heart,
-    price: '150€',
+    price: '557€',
     duration: '3 heures',
     gradient: 'linear-gradient(135deg, #D39280, #c9c7e6)',
     features: [
@@ -17,7 +17,7 @@ const packages = [
   {
     name: 'Sérénité',
     icon: Home,
-    price: '280€',
+    price: '749€',
     duration: '6 heures',
     gradient: 'linear-gradient(135deg, #D39280, #c9c7e6)',
     features: [
@@ -32,7 +32,7 @@ const packages = [
   {
     name: 'Harmonie',
     icon: Sparkles,
-    price: '520€',
+    price: '2230€',
     duration: '12 heures',
     gradient: 'linear-gradient(135deg, #D39280, #c9c7e6)',
     features: [
@@ -46,7 +46,7 @@ const packages = [
   {
     name: 'Douce Nuit',
     icon: Moon,
-    price: '180€',
+    price: 'À partir de 350€',
     duration: 'Nuit (8h)',
     gradient: 'linear-gradient(135deg, #899484, #c9c7e6)',
     features: [

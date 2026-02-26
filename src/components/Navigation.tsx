@@ -66,7 +66,7 @@ export default function Navigation() {
             </a>
 
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#services" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              <a href="#/services" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                 Nos Services
               </a>
               <a href="#/concept" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
@@ -127,7 +127,7 @@ export default function Navigation() {
         {isMenuOpen && (
           <div className="md:hidden bg-beige border-t border-vert/10">
             <div className="px-4 py-6 space-y-4">
-              <a href="#services" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              <a href="#/services" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                 Nos Services
               </a>
               <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">

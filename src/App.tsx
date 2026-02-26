@@ -22,6 +22,7 @@ import MamaSitterSearch from './pages/MamaSitterSearch';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import Messages from './pages/Messages';
+import ServicesPage from './pages/Services';
 
 function App() {
   const [route, setRoute] = useState<string>(
@@ -216,6 +217,17 @@ function App() {
     )
   }
 
+  if (route === '/services') {
+    return (
+      <div className="min-h-screen bg-beige/30 flex flex-col">
+        <Navigation />
+        <main className="flex-grow">
+          <ServicesPage />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
