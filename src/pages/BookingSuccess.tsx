@@ -102,10 +102,7 @@ export default function BookingSuccess() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="/#/messages" className="bg-vert text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-xl shadow-vert/10 hover:-translate-y-1 transition-all">
-                            Voir mes messages
-                        </a>
-                        <a href="/" className="bg-[#FAF7F2] text-vert px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-sm border border-sable/10 hover:bg-white transition-all">
+                        <a href="/" className="bg-vert text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-xl shadow-vert/10 hover:-translate-y-1 transition-all">
                             Accueil
                         </a>
                     </div>
