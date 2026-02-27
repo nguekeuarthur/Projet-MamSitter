@@ -179,3 +179,14 @@ export async function createStripeAccountLink() {
     }
     return response.json();
 }
+
+export async function simulateStripeSuccess() {
+    const response = await fetch(`${API_URL}/users/simulate-stripe-success`, {
+        method: 'POST',
+        headers: authHeaders(),
+    });
+    if (!response.ok) {
+        throw new Error('Erreur lors de la simulation');
+    }
+    return response.json();
+}

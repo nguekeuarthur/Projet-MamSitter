@@ -88,9 +88,11 @@ export default function Navigation() {
                       <Shield className="w-4 h-4" /> Dashboard Admin
                     </a>
                   )}
-                  <a href="#/messages" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4 flex items-center gap-1.5">
-                    <MessageCircle className="w-4 h-4" /> Messages
-                  </a>
+                  {user.role !== 'Admin' && (
+                    <a href="#/messages" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4 flex items-center gap-1.5">
+                      <MessageCircle className="w-4 h-4" /> Messages
+                    </a>
+                  )}
                   <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm hover:text-sable transition-colors">
                     <User className="w-4 h-4" />
                     {user.name}

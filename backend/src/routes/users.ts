@@ -4,7 +4,7 @@ import { authenticate, authorize } from '../middleware/auth';
 import { geocode, haversineDistance } from '../utils/geocode';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 const router = Router();
 
 router.get('/me', authenticate, (req: any, res: Response) => {
@@ -63,27 +63,31 @@ router.put('/me', authenticate, async (req: any, res: Response): Promise<void> =
 
 router.post('/create-stripe-account', authenticate, authorize('MamaSitter'), async (req: any, res: Response) => {
   try {
+    console.log(`[STRIPE] Tentative de création de compte pour ${req.user.email}`);
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    if (!user) {
+      console.error('[STRIPE] Utilisateur non trouvé');
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
 
     let stripeAccountId = user.stripeAccountId;
 
-    // 1. Créer le compte Stripe Express si pas déjà fait
+    // 1. Créer le compte Stripe si pas déjà fait
     if (!stripeAccountId) {
+      console.log('[STRIPE] Création du compte Standard/Connect...');
       const account = await stripe.accounts.create({
-        type: 'express',
+        type: 'standard',
         email: user.email,
-        capabilities: {
-          card_payments: { requested: true },
-          transfers: { requested: true },
-        },
+        country: 'FR', // Pays par défaut pour MamaSitter
       });
       stripeAccountId = account.id;
       user.stripeAccountId = stripeAccountId;
       await user.save();
+      console.log(`[STRIPE] Compte créé : ${stripeAccountId}`);
     }
 
     // 2. Créer le Account Link (Onboarding)
+    console.log(`[STRIPE] Création du lien d'onboarding pour ${stripeAccountId}`);
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccountId,
       refresh_url: `${process.env.FRONTEND_URL}/#/profile?stripe=refresh`,
@@ -93,8 +97,12 @@ router.post('/create-stripe-account', authenticate, authorize('MamaSitter'), asy
 
     res.json({ url: accountLink.url });
   } catch (err: any) {
-    console.error('Stripe Connect error:', err);
-    res.status(500).json({ error: err.message });
+    console.error('[STRIPE ERROR]:', err);
+    res.status(500).json({
+      error: 'Erreur Stripe Connect',
+      message: err.message,
+      code: err.code
+    });
   }
 });
 
@@ -165,7 +173,8 @@ router.post('/approve-sitter', authenticate, authorize('Admin'), async (req: Req
 router.get('/all-sitters', authenticate, authorize('Admin'), async (_req: Request, res: Response) => {
   try {
     // On exclut les infos bancaires sensibles des listes de masse
-    const sitters = await User.find({ role: 'MamaSitter' })
+    // On récupère tous les utilisateurs (MamaSitters et Mamans) pour la gestion admin
+    const sitters = await User.find({ role: { $ne: 'Admin' } })
       .select('-password -rib -bankInfo')
       .sort({ createdAt: -1 });
     res.json(sitters);
