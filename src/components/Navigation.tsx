@@ -58,11 +58,11 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className="fixed top-0 w-full bg-beige/95 backdrop-blur-sm z-50 border-b border-vert/10">
+      <nav className="fixed top-0 w-full bg-beige backdrop-blur-sm z-50 border-b border-vert/20 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-28">
             <a href="#/" className="flex items-center space-x-2">
-              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-12 w-auto" />
+              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-20 w-auto" />
             </a>
 
             <div className="hidden md:flex items-center space-x-8">

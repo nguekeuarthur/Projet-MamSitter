@@ -62,7 +62,7 @@ export default function BecomeSitter() {
           <div className="relative">
             <div className="aspect-[4/3] rounded-3xl shadow-2xl overflow-hidden bg-sable">
               <img
-                src="https://images.pexels.com/photos/3768131/pexels-photo-3768131.jpeg?auto=compress&cs=tinysrgb&w=800"
+                src="/images/Massage.jpg"
                 alt="MamaSitter au travail"
                 className="w-full h-full object-cover mix-blend-overlay opacity-90"
               />
