@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Camera, Loader2, MapPin, Euro, FileText, User, CreditCard, ShieldCheck } from 'lucide-react';
+import { Camera, Loader2, MapPin, Euro, FileText, User, CreditCard, ShieldCheck, History } from 'lucide-react';
 import { getUserProfile, updateProfile, MamaSitter, fetchStripeStatus, createStripeAccountLink } from '../services/userService';
 import { getCurrentUser } from '../services/authService';
 
@@ -241,78 +241,69 @@ export default function Profile() {
                                     <textarea
                                         value={bio}
                                         onChange={(e) => setBio(e.target.value)}
-                                        rows={6}
+                                        rows={5}
                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato resize-none leading-relaxed"
                                         placeholder="Présentez-vous, décrivez votre expérience et ce que vous proposez aux mamans..."
                                     />
-                                    <p className="text-xs text-gray-400 mt-2 font-lato text-right">{bio.length} caractères</p>
-                                </div>
-
-                                <h3 className="font-poppins font-bold text-lg text-vert border-b border-gray-100 pb-2 mt-8">Informations de Paiement</h3>
-                                <p className="text-xs text-gray-500 font-lato mb-4">
-                                    Ces informations ne sont visibles que par l'administration pour effectuer vos virements.
-                                </p>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">RIB / IBAN</label>
-                                    <input
-                                        type="text"
-                                        value={rib}
-                                        onChange={(e) => setRib(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato"
-                                        placeholder="Format IBAN recommandé"
-                                    />
+                                    <p className="text-xs text-gray-400 mt-1 font-lato text-right">{bio.length} caractères</p>
                                 </div>
 
                                 {/* Section Stripe Connect */}
-                                <div className="mt-8 p-6 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+                                <div className="mt-4 p-6 rounded-3xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 border border-indigo-100/50">
+                                    <div className="flex items-center gap-3 mb-5">
+                                        <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center">
                                             <CreditCard className="w-5 h-5 text-indigo-600" />
                                         </div>
                                         <div>
-                                            <h4 className="font-poppins font-bold text-gray-800">Stripe Connect</h4>
-                                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest italic">Paiement Automatique (Optionnel)</p>
+                                            <h4 className="font-poppins font-bold text-gray-800">Recevoir mes paiements</h4>
+                                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">via Stripe Connect</p>
                                         </div>
                                     </div>
 
                                     {stripeStatus?.connected && stripeStatus?.payouts_enabled ? (
-                                        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
-                                            <ShieldCheck className="w-5 h-5 text-green-600" />
+                                        <div className="flex items-center gap-3 p-4 bg-white border border-green-100 rounded-2xl shadow-sm">
+                                            <ShieldCheck className="w-6 h-6 text-green-600 flex-shrink-0" />
                                             <div>
-                                                <p className="text-sm font-bold text-green-700">Compte Stripe Connecté</p>
-                                                <p className="text-xs text-green-600/80">Votre compte est prêt à recevoir des paiements automatiques.</p>
+                                                <p className="text-sm font-bold text-green-700">Compte connecté ✓</p>
+                                                <p className="text-xs text-green-600/70">Vous recevez automatiquement 73% de chaque réservation.</p>
                                             </div>
+                                        </div>
+                                    ) : stripeStatus?.connected ? (
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-3 p-4 bg-white border border-orange-100 rounded-2xl">
+                                                <History className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-sm font-bold text-orange-600">Configuration en cours</p>
+                                                    <p className="text-xs text-orange-500/80">Stripe vérifie vos informations. Cela peut prendre quelques heures pour activer les virements.</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={handleConnectStripe}
+                                                disabled={stripeLoading}
+                                                className="w-full py-3 bg-white text-orange-600 border border-orange-200 font-bold rounded-xl hover:bg-orange-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                            >
+                                                {stripeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Vérifier mon statut sur Stripe'}
+                                            </button>
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
                                             <p className="text-sm text-gray-600 font-lato leading-relaxed">
-                                                En connectant votre compte Stripe, vous recevrez votre part (73%) <b>instantanément et automatiquement</b> à chaque réservation.
+                                                Connectez votre compte Stripe pour recevoir <b>automatiquement votre part (73%)</b> à chaque réservation. Sécurisé et instantané.
                                             </p>
                                             <button
                                                 type="button"
                                                 onClick={handleConnectStripe}
                                                 disabled={stripeLoading}
-                                                className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 disabled:opacity-50"
+                                                className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 disabled:opacity-50"
                                             >
-                                                {stripeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Connecter à Stripe'}
+                                                {stripeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CreditCard className="w-4 h-4" /> Connecter mon compte Stripe</>}
                                             </button>
                                             <p className="text-[10px] text-center text-gray-400 font-medium">
-                                                Vous serez redirigée vers le portail sécurisé de Stripe pour finaliser votre inscription.
+                                                Vous serez redirigée vers le portail sécurisé de Stripe.
                                             </p>
                                         </div>
                                     )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">Autres infos bancaires (SWIFT, Nom Banque...)</label>
-                                    <textarea
-                                        value={bankInfo}
-                                        onChange={(e) => setBankInfo(e.target.value)}
-                                        rows={2}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato resize-none"
-                                        placeholder="Ex: BIC/SWIFT, Nom de la banque..."
-                                    />
                                 </div>
                             </div>
                         )}
