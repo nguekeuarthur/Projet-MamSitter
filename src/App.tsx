@@ -6,6 +6,7 @@ import Testimonials from './components/Testimonials';
 import BecomeSitter from './components/BecomeSitter';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
+import CookieConsent from './components/CookieConsent';
 import AuthLogin from './components/AuthLogin';
 import AuthRegister from './components/AuthRegister';
 import ForgotPasswordPage from './pages/ForgotPassword';
@@ -250,6 +251,7 @@ function App() {
       <Testimonials />
       <BecomeSitter />
       <Footer />
+      <CookieConsent />
     </div>
   )
 }
