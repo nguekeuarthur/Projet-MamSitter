@@ -3,7 +3,8 @@ import { register } from '../services/authService'
 import { Upload, UserCircle, CheckCircle, FileText } from 'lucide-react'
 
 export default function AuthRegister() {
-  const [name, setName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -12,7 +13,7 @@ export default function AuthRegister() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
-  // Champs supplémentaires pour MamaSitters
+  // Champs supplémentaires
   const [city, setCity] = useState('')
   const [postalCode, setPostalCode] = useState('')
   const [hourlyRate, setHourlyRate] = useState('')
@@ -21,6 +22,33 @@ export default function AuthRegister() {
   const [idCard, setIdCard] = useState('')
   const [avatarName, setAvatarName] = useState('')
   const [idCardName, setIdCardName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [shortDescription, setShortDescription] = useState('')
+  const [numberOfChildren, setNumberOfChildren] = useState('')
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
+  const [diploma, setDiploma] = useState('')
+  const [criminalRecord, setCriminalRecord] = useState('')
+  const [criminalRecordName, setCriminalRecordName] = useState('')
+  const [hasCriminalRecordCommitment, setHasCriminalRecordCommitment] = useState(false)
+  const [hasTaxCommitment, setHasTaxCommitment] = useState(false)
+  const [availabilities, setAvailabilities] = useState<Record<string, string[]>>({
+    'Lundi': [], 'Mardi': [], 'Mercredi': [], 'Jeudi': [], 'Vendredi': [], 'Samedi': [], 'Dimanche': []
+  })
+
+  // Constantes pour les listes
+  const LANGUAGES = ['Français', 'Anglais', 'Allemand', 'Espagnol', 'Italien', 'Arabe', 'Russe', 'Chinois', 'Autre'];
+  const DIPLOMAS = [
+    'Aucun diplôme spécifique',
+    'CAP Petite Enfance',
+    'BEP Carrières Sanitaires et Sociales',
+    'BAFA',
+    'Diplôme d\'État d\'Auxiliaire de Puériculture',
+    'Diplôme d\'État d\'Éducateur de Jeunes Enfants',
+    'Titre Professionnel d\'Assistant de Vie aux Familles (ADVF)',
+    'Formation Premiers Secours (PSC1)'
+  ];
+  const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+  const SLOTS = ['Matin (8h-12h)', 'Après-midi (12h-18h)', 'Soirée (18h-22h)', 'Nuit (22h-8h)'];
 
   const handleIdCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,6 +82,38 @@ export default function AuthRegister() {
     }
   };
 
+  const handleCriminalRecordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Le document est trop volumineux (max 5Mo).");
+        return;
+      }
+      setCriminalRecordName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCriminalRecord(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const toggleLanguage = (lang: string) => {
+    setSelectedLanguages(prev =>
+      prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
+    );
+  };
+
+  const toggleAvailability = (day: string, slot: string) => {
+    setAvailabilities(prev => {
+      const daySlots = prev[day] || [];
+      return {
+        ...prev,
+        [day]: daySlots.includes(slot) ? daySlots.filter(s => s !== slot) : [...daySlots, slot]
+      };
+    });
+  };
+
   const getPasswordStrength = (pwd: string) => {
     if (!pwd) return 0;
     let score = 0;
@@ -74,24 +134,39 @@ export default function AuthRegister() {
     setError(null)
     if (password !== confirm) return setError('Les mots de passe ne correspondent pas.')
 
+    // Validation photo obligatoire pour MamaSitter
+    if (role === 'MamaSitter' && !avatar) {
+      return setError('Veuillez ajouter votre photo de profil.')
+    }
+
     // Validation de la robustesse
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!passwordRegex.test(password)) {
       return setError('Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.')
     }
     setLoading(true)
+    const fullName = `${firstName} ${lastName}`.trim();
     try {
       await register({
-        name,
+        name: fullName,
         email,
         password,
         role,
-        city: role === 'MamaSitter' ? city : undefined,
-        postalCode: role === 'MamaSitter' ? postalCode : undefined,
+        city,
+        postalCode,
         hourlyRate: role === 'MamaSitter' ? Number(hourlyRate) : undefined,
-        bio: role === 'MamaSitter' ? bio : undefined,
-        avatar: role === 'MamaSitter' ? avatar : undefined,
-        idCard: role === 'MamaSitter' ? idCard : undefined
+        bio,
+        shortDescription: role === 'MamaSitter' ? shortDescription : undefined,
+        phone,
+        languages: role === 'MamaSitter' ? selectedLanguages : undefined,
+        diploma: role === 'MamaSitter' ? diploma : undefined,
+        availabilities: role === 'MamaSitter' ? availabilities : undefined,
+        avatar: avatar || undefined,
+        idCard,
+        criminalRecord,
+        hasCriminalRecordCommitment,
+        hasTaxCommitment: role === 'MamaSitter' ? hasTaxCommitment : undefined,
+        childCount: role === 'Maman' ? numberOfChildren : undefined
       })
       setSuccess(true)
     } catch (err: any) {
@@ -133,16 +208,29 @@ export default function AuthRegister() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Nom</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Votre nom"
-                className="w-full px-5 py-4 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato text-base"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Prénom <span className="text-red-400">*</span></label>
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  placeholder="Votre prénom"
+                  className="w-full px-5 py-4 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato text-base"
+                />
+              </div>
+              <div>
+                <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Nom <span className="text-red-400">*</span></label>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  placeholder="Votre nom"
+                  className="w-full px-5 py-4 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato text-base"
+                />
+              </div>
             </div>
             <div>
               <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Email</label>
@@ -204,124 +292,180 @@ export default function AuthRegister() {
                 <button
                   type="button"
                   onClick={() => setRole('Maman')}
-                  className={`py-3 rounded-lg border-2 transition-all font-poppins font-semibold ${role === 'Maman'
-                    ? 'border-sable bg-sable/5 text-sable'
-                    : 'border-gray-200 text-gray-500 hover:border-sable/30'
-                    }`}
-                >
-                  Une Maman
-                </button>
+                  className={`py-3 rounded-lg border-2 transition-all font-poppins font-semibold ${role === 'Maman' ? 'border-sable bg-sable/5 text-sable' : 'border-gray-200 text-gray-500 hover:border-sable/30'}`}
+                >Une Maman</button>
                 <button
                   type="button"
                   onClick={() => setRole('MamaSitter')}
-                  className={`py-3 rounded-lg border-2 transition-all font-poppins font-semibold ${role === 'MamaSitter'
-                    ? 'border-vert bg-vert/5 text-vert'
-                    : 'border-gray-200 text-gray-500 hover:border-vert/30'
-                    }`}
-                >
-                  Une MamaSitter
-                </button>
+                  className={`py-3 rounded-lg border-2 transition-all font-poppins font-semibold ${role === 'MamaSitter' ? 'border-vert bg-vert/5 text-vert' : 'border-gray-200 text-gray-500 hover:border-vert/30'}`}
+                >Une MamaSitter</button>
               </div>
             </div>
 
-            {role === 'MamaSitter' && (
-              <div className="space-y-5 pt-2 border-t border-gray-100 mt-2 animate-in fade-in slide-in-from-top-4 duration-300">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Ville</label>
-                    <input
-                      type="text"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      required={role === 'MamaSitter'}
-                      placeholder="Ex. Paris"
-                      className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Code Postal</label>
-                    <input
-                      type="text"
-                      value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value)}
-                      required={role === 'MamaSitter'}
-                      placeholder="75001"
-                      className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato"
-                    />
-                  </div>
+            {/* Section Profil & Contact */}
+            <div className="space-y-5 pt-6 border-t border-gray-100 mt-2 animate-in fade-in duration-500">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Téléphone <span className="text-red-400">*</span></label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                    placeholder="06 12 34 56 78"
+                    className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato"
+                  />
                 </div>
                 <div>
-                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Tarif horaire (€)</label>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Ville</label>
                   <input
-                    type="number"
-                    value={hourlyRate}
-                    onChange={(e) => setHourlyRate(e.target.value)}
-                    required={role === 'MamaSitter'}
-                    placeholder="25"
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Ex: Paris"
+                    className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Code Postal</label>
+                  <input
+                    type="text"
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    placeholder="75001"
+                    className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato"
+                  />
+                </div>
+                {role === 'Maman' && (
+                  <div>
+                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Nombre d'enfant(s)</label>
+                    <input
+                      type="text"
+                      value={numberOfChildren}
+                      onChange={(e) => setNumberOfChildren(e.target.value)}
+                      placeholder="Ex: 2"
+                      className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato"
+                    />
+                  </div>
+                )}
+                {role === 'MamaSitter' && (
+                  <div>
+                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Tarif horaire (€)</label>
+                    <input
+                      type="number"
+                      value={hourlyRate}
+                      onChange={(e) => setHourlyRate(e.target.value)}
+                      required
+                      placeholder="25"
+                      className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {role === 'MamaSitter' && (
+                <div>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Accroche (max 70 car.)</label>
+                  <input
+                    type="text"
+                    value={shortDescription}
+                    onChange={(e) => setShortDescription(e.target.value.slice(0, 70))}
+                    required
+                    placeholder="Ex: Douce et expérimentée..."
                     className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato"
                   />
                 </div>
-                <div>
-                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Bio / Expérience</label>
-                  <textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    required={role === 'MamaSitter'}
-                    placeholder="Parlez-nous de vous et de votre expérience avec les enfants..."
-                    rows={3}
-                    className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato resize-none"
-                  />
+              )}
+
+              <div>
+                <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Biographie / Présentation <span className="text-red-400">*</span></label>
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  required
+                  placeholder="Parlez-nous un peu de vous..."
+                  rows={4}
+                  className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-sable focus:ring-2 focus:ring-sable/20 outline-none transition font-lato resize-none text-sm"
+                />
+              </div>
+
+              {role === 'MamaSitter' && (
+                <div className="space-y-5">
+                  <div>
+                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-3">Langues parlées</label>
+                    <div className="flex flex-wrap gap-2">
+                      {LANGUAGES.map(lang => (
+                        <button key={lang} type="button" onClick={() => toggleLanguage(lang)} className={`px-3 py-1.5 rounded-full border text-xs font-medium transition-all ${selectedLanguages.includes(lang) ? 'bg-vert border-vert text-white shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:border-vert/50'}`}>{lang}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Diplôme</label>
+                    <select value={diploma} onChange={(e) => setDiploma(e.target.value)} required className="w-full px-5 py-3 rounded-lg border border-gray-300 focus:border-vert focus:ring-2 focus:ring-vert/20 outline-none transition font-lato text-sm bg-white">
+                      <option value="">Sélectionnez un diplôme...</option>
+                      {DIPLOMAS.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Mes disponibilités</label>
+                    <div className="overflow-x-auto"><table className="w-full text-xs font-lato border-collapse"><thead><tr><th className="p-1"></th>{SLOTS.map(s => <th key={s} className="p-1 font-semibold text-gray-500 overflow-hidden text-ellipsis whitespace-nowrap max-w-[50px]">{s.split(' ')[0]}</th>)}</tr></thead><tbody>{DAYS.map(day => (<tr key={day}><td className="p-1 font-semibold text-gray-700">{day.slice(0, 2)}</td>{SLOTS.map(slot => (<td key={slot} className="p-1 text-center"><button type="button" onClick={() => toggleAvailability(day, slot)} className={`w-6 h-6 rounded border transition-all ${availabilities[day]?.includes(slot) ? 'bg-vert border-vert text-white' : 'bg-white border-gray-200 text-transparent'}`}>✓</button></td>))}</tr>))}</tbody></table></div>
+                  </div>
                 </div>
+              )}
+
+              {/* Photo et Documents (Maintenant pour tout le monde) */}
+              <div className="space-y-6 pt-4">
                 <div>
-                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Photo de profil (facultatif)</label>
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Votre photo {role === 'MamaSitter' && <span className="text-red-400">*</span>}</label>
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-inner">
-                      {avatar ? (
-                        <img src={avatar} alt="Aperçu" className="w-full h-full object-cover" />
-                      ) : (
-                        <UserCircle className="w-10 h-10 text-gray-200" />
-                      )}
+                      {avatar ? <img src={avatar} alt="Aperçu" className="w-full h-full object-cover" /> : <UserCircle className="w-10 h-10 text-gray-200" />}
                     </div>
-                    <label className="flex-grow flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-vert/50 hover:bg-vert/5 transition-all group">
-                      <Upload className="w-4 h-4 text-gray-400 group-hover:text-vert transition-colors" />
-                      <span className="text-sm font-lato text-gray-500 group-hover:text-vert truncate max-w-[150px]">
-                        {avatarName || "Choisir une photo"}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                        className="hidden"
-                      />
+                    <label className="flex-grow flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-sable/50 hover:bg-sable/5 transition-all group">
+                      <Upload className="w-4 h-4 text-gray-400 group-hover:text-sable transition-colors" />
+                      <span className="text-sm font-lato text-gray-500 group-hover:text-sable truncate max-w-[150px]">{avatarName || "Choisir une photo"}</span>
+                      <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
                     </label>
                   </div>
                 </div>
-                <div>
-                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-2">Pièce d'identité (Titre de séjour, Passeport...)</label>
-                  <p className="text-[11px] text-gray-400 mb-2 font-lato">Requis pour validation par l'admin. Votre document reste strictement confidentiel.</p>
-                  <label className="flex items-center gap-3 w-full px-5 py-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-vert/50 hover:bg-vert/5 transition-all group">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:bg-vert/10 transition-colors">
-                      {idCard ? <CheckCircle className="w-5 h-5 text-green-500" /> : <FileText className="w-5 h-5 text-gray-300 group-hover:text-vert" />}
-                    </div>
-                    <div className="flex-grow text-left">
-                      <p className="text-sm font-poppins font-bold text-gray-700 group-hover:text-vert transition-colors truncate max-w-[200px]">
-                        {idCardName || "Sélectionner un document"}
-                      </p>
-                      <p className="text-[10px] text-gray-400 font-lato">
-                        {idCard ? "Document prêt à l'envoi" : "Cliquez pour parcourir vos fichiers"}
-                      </p>
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
-                      onChange={handleIdCardChange}
-                      required={role === 'MamaSitter'}
-                      className="hidden"
-                    />
+
+                <div className="space-y-4">
+                  <label className="block font-poppins font-semibold text-sm text-gray-700 mb-1">Documents de sécurité</label>
+                  <p className="text-[11px] text-gray-400 font-lato leading-relaxed">Afin d’assurer la sécurité et la confiance de chacune, les mamans comme les MamaSitters fournissent une pièce d’identité lors de l’inscription.</p>
+                  <div className="grid grid-cols-1 gap-3">
+                    <label className="flex items-center gap-3 w-full px-5 py-3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-sable/50 hover:bg-sable/5 transition-all group">
+                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        {idCard ? <CheckCircle className="w-5 h-5 text-green-500" /> : <FileText className="w-5 h-5 text-gray-300" />}
+                      </div>
+                      <span className="text-xs font-poppins font-bold text-gray-700 truncate">{idCardName || "Télécharger ma pièce d'identité"}</span>
+                      <input type="file" accept="image/*,.pdf" onChange={handleIdCardChange} className="hidden" />
+                    </label>
+                    <label className="flex items-center gap-3 w-full px-5 py-3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-sable/50 hover:bg-sable/5 transition-all group">
+                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        {criminalRecord ? <CheckCircle className="w-5 h-5 text-green-500" /> : <FileText className="w-5 h-5 text-gray-300" />}
+                      </div>
+                      <span className="text-xs font-poppins font-bold text-gray-700 truncate">{criminalRecordName || "Télécharger mon casier judiciaire (N°3)"}</span>
+                      <input type="file" accept="image/*,.pdf" onChange={handleCriminalRecordChange} className="hidden" />
+                    </label>
+                  </div>
+
+                  <label className="flex items-start gap-3 cursor-pointer group mt-4">
+                    <input type="checkbox" checked={hasCriminalRecordCommitment} onChange={(e) => setHasCriminalRecordCommitment(e.target.checked)} className="mt-1 w-4 h-4 rounded border-gray-300 text-sable focus:ring-sable" />
+                    <span className="text-[11px] text-gray-500 font-lato leading-tight group-hover:text-gray-700 transition-colors">Je n'ai pas encore d'extrait de casier judiciaire et je m'engage à le fournir dans les 48h.</span>
                   </label>
+
+                  {role === 'MamaSitter' && (
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input type="checkbox" checked={hasTaxCommitment} required onChange={(e) => setHasTaxCommitment(e.target.checked)} className="mt-1 w-4 h-4 rounded border-gray-300 text-vert focus:ring-vert" />
+                      <span className="text-[11px] text-gray-500 font-lato leading-tight group-hover:text-gray-700 transition-colors">Je m'engage à déclarer aux impôts l'ensemble des revenus perçus via la plateforme.</span>
+                    </label>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
             <button
               type="submit"
               disabled={loading}

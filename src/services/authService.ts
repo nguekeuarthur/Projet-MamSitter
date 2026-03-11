@@ -10,9 +10,18 @@ export async function register(payload: {
   city?: string;
   postalCode?: string;
   bio?: string;
+  shortDescription?: string;
   hourlyRate?: number;
   avatar?: string;
+  phone?: string;
+  languages?: string[];
+  diploma?: string;
+  availabilities?: any;
   idCard?: string;
+  criminalRecord?: string;
+  hasCriminalRecordCommitment?: boolean;
+  hasTaxCommitment?: boolean;
+  childCount?: string;
 }) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
