@@ -14,7 +14,7 @@ router.get('/me', authenticate, (req: any, res: Response) => {
 // Route de mise à jour du profil
 router.put('/me', authenticate, async (req: any, res: Response): Promise<void> => {
   try {
-    const { name, bio, hourlyRate, city, postalCode, avatar, rib, bankInfo } = req.body;
+    const { name, bio, shortDescription, hourlyRate, city, postalCode, avatar, rib, bankInfo, phone, languages, diploma, availabilities } = req.body;
 
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -24,10 +24,15 @@ router.put('/me', authenticate, async (req: any, res: Response): Promise<void> =
 
     if (name !== undefined) user.name = name;
     if (bio !== undefined) user.bio = bio;
+    if (shortDescription !== undefined) (user as any).shortDescription = shortDescription;
     if (hourlyRate !== undefined) user.hourlyRate = Number(hourlyRate);
     if (avatar !== undefined) user.avatar = avatar;
     if (rib !== undefined) user.rib = rib;
     if (bankInfo !== undefined) user.bankInfo = bankInfo;
+    if (phone !== undefined) (user as any).phone = phone;
+    if (languages !== undefined) (user as any).languages = languages;
+    if (diploma !== undefined) (user as any).diploma = diploma;
+    if (availabilities !== undefined) (user as any).availabilities = availabilities;
 
     let locationUpdated = false;
     if (city !== undefined && city !== user.city) {
@@ -237,7 +242,7 @@ router.post('/ban-user', authenticate, authorize('Admin'), async (req: Request, 
 // ====================================================================
 // Route de recherche des MamaSitters — approche Haversine fiable
 // ====================================================================
-router.get('/mamasitters', authenticate, authorize('Maman', 'MamaSitter', 'Admin'), async (req: any, res: Response): Promise<void> => {
+router.get('/mamasitters', async (req: any, res: Response): Promise<void> => {
   try {
     const { city, postalCode, lat, lng, radius } = req.query;
 
@@ -261,7 +266,7 @@ router.get('/mamasitters', authenticate, authorize('Maman', 'MamaSitter', 'Admin
         dbQuery.postalCode = postalCode;
       }
 
-      const results = await User.find(dbQuery).select('-password -passwordResetToken -verificationToken -idCard -rib -bankInfo');
+      const results = await User.find(dbQuery).select('-password -passwordResetToken -verificationToken -idCard -rib -bankInfo -phone -city -postalCode');
       res.json(results);
       return;
     }
@@ -299,8 +304,15 @@ router.get('/mamasitters', authenticate, authorize('Maman', 'MamaSitter', 'Admin
       const distance = haversineDistance(latitude, longitude, sLat, sLng);
 
       if (distance <= radiusKm) {
-        const sitterObj = sitter.toObject();
-        (sitterObj as any)._distance = Math.round(distance * 10) / 10; // distance en km
+        const sitterObj = sitter.toObject() as any;
+        sitterObj._distance = Math.round(distance * 10) / 10;
+
+        // Supprimer les infos privées avant envoi
+        delete sitterObj.city;
+        delete sitterObj.postalCode;
+        delete sitterObj.phone;
+        delete sitterObj.phoneNumber;
+
         filtered.push(sitterObj);
       }
     }
