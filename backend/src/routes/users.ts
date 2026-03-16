@@ -4,7 +4,7 @@ import { authenticate, authorize } from '../middleware/auth';
 import { geocode, haversineDistance } from '../utils/geocode';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 const router = Router();
 
 router.get('/me', authenticate, (req: any, res: Response) => {
@@ -14,7 +14,7 @@ router.get('/me', authenticate, (req: any, res: Response) => {
 // Route de mise à jour du profil
 router.put('/me', authenticate, async (req: any, res: Response): Promise<void> => {
   try {
-    const { name, bio, hourlyRate, city, postalCode, avatar, rib, bankInfo } = req.body;
+    const { name, bio, shortDescription, hourlyRate, city, postalCode, avatar, rib, bankInfo, phone, languages, diploma, availabilities } = req.body;
 
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -24,10 +24,15 @@ router.put('/me', authenticate, async (req: any, res: Response): Promise<void> =
 
     if (name !== undefined) user.name = name;
     if (bio !== undefined) user.bio = bio;
+    if (shortDescription !== undefined) (user as any).shortDescription = shortDescription;
     if (hourlyRate !== undefined) user.hourlyRate = Number(hourlyRate);
     if (avatar !== undefined) user.avatar = avatar;
     if (rib !== undefined) user.rib = rib;
     if (bankInfo !== undefined) user.bankInfo = bankInfo;
+    if (phone !== undefined) (user as any).phone = phone;
+    if (languages !== undefined) (user as any).languages = languages;
+    if (diploma !== undefined) (user as any).diploma = diploma;
+    if (availabilities !== undefined) (user as any).availabilities = availabilities;
 
     let locationUpdated = false;
     if (city !== undefined && city !== user.city) {
@@ -63,27 +68,31 @@ router.put('/me', authenticate, async (req: any, res: Response): Promise<void> =
 
 router.post('/create-stripe-account', authenticate, authorize('MamaSitter'), async (req: any, res: Response) => {
   try {
+    console.log(`[STRIPE] Tentative de création de compte pour ${req.user.email}`);
     const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    if (!user) {
+      console.error('[STRIPE] Utilisateur non trouvé');
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
 
     let stripeAccountId = user.stripeAccountId;
 
-    // 1. Créer le compte Stripe Express si pas déjà fait
+    // 1. Créer le compte Stripe si pas déjà fait
     if (!stripeAccountId) {
+      console.log('[STRIPE] Création du compte Standard/Connect...');
       const account = await stripe.accounts.create({
-        type: 'express',
+        type: 'standard',
         email: user.email,
-        capabilities: {
-          card_payments: { requested: true },
-          transfers: { requested: true },
-        },
+        country: 'FR', // Pays par défaut pour MamaSitter
       });
       stripeAccountId = account.id;
       user.stripeAccountId = stripeAccountId;
       await user.save();
+      console.log(`[STRIPE] Compte créé : ${stripeAccountId}`);
     }
 
     // 2. Créer le Account Link (Onboarding)
+    console.log(`[STRIPE] Création du lien d'onboarding pour ${stripeAccountId}`);
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccountId,
       refresh_url: `${process.env.FRONTEND_URL}/#/profile?stripe=refresh`,
@@ -93,8 +102,12 @@ router.post('/create-stripe-account', authenticate, authorize('MamaSitter'), asy
 
     res.json({ url: accountLink.url });
   } catch (err: any) {
-    console.error('Stripe Connect error:', err);
-    res.status(500).json({ error: err.message });
+    console.error('[STRIPE ERROR]:', err);
+    res.status(500).json({
+      error: 'Erreur Stripe Connect',
+      message: err.message,
+      code: err.code
+    });
   }
 });
 
@@ -165,7 +178,8 @@ router.post('/approve-sitter', authenticate, authorize('Admin'), async (req: Req
 router.get('/all-sitters', authenticate, authorize('Admin'), async (_req: Request, res: Response) => {
   try {
     // On exclut les infos bancaires sensibles des listes de masse
-    const sitters = await User.find({ role: 'MamaSitter' })
+    // On récupère tous les utilisateurs (MamaSitters et Mamans) pour la gestion admin
+    const sitters = await User.find({ role: { $ne: 'Admin' } })
       .select('-password -rib -bankInfo')
       .sort({ createdAt: -1 });
     res.json(sitters);
@@ -228,7 +242,7 @@ router.post('/ban-user', authenticate, authorize('Admin'), async (req: Request, 
 // ====================================================================
 // Route de recherche des MamaSitters — approche Haversine fiable
 // ====================================================================
-router.get('/mamasitters', authenticate, authorize('Maman', 'MamaSitter', 'Admin'), async (req: any, res: Response): Promise<void> => {
+router.get('/mamasitters', async (req: any, res: Response): Promise<void> => {
   try {
     const { city, postalCode, lat, lng, radius } = req.query;
 
@@ -252,7 +266,7 @@ router.get('/mamasitters', authenticate, authorize('Maman', 'MamaSitter', 'Admin
         dbQuery.postalCode = postalCode;
       }
 
-      const results = await User.find(dbQuery).select('-password -passwordResetToken -verificationToken -idCard -rib -bankInfo');
+      const results = await User.find(dbQuery).select('-password -passwordResetToken -verificationToken -idCard -rib -bankInfo -phone -city -postalCode');
       res.json(results);
       return;
     }
@@ -290,8 +304,15 @@ router.get('/mamasitters', authenticate, authorize('Maman', 'MamaSitter', 'Admin
       const distance = haversineDistance(latitude, longitude, sLat, sLng);
 
       if (distance <= radiusKm) {
-        const sitterObj = sitter.toObject();
-        (sitterObj as any)._distance = Math.round(distance * 10) / 10; // distance en km
+        const sitterObj = sitter.toObject() as any;
+        sitterObj._distance = Math.round(distance * 10) / 10;
+
+        // Supprimer les infos privées avant envoi
+        delete sitterObj.city;
+        delete sitterObj.postalCode;
+        delete sitterObj.phone;
+        delete sitterObj.phoneNumber;
+
         filtered.push(sitterObj);
       }
     }

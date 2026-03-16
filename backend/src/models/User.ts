@@ -15,13 +15,24 @@ const userSchema = new mongoose.Schema({
   },
   // Profil 
   bio: { type: String, default: '' },
+  shortDescription: { type: String, default: '', maxLength: 70 },
   hourlyRate: { type: Number, default: 0 },
   avatar: { type: String, default: '' },
+  phone: { type: String, default: '' },
+  languages: { type: [String], default: [] },
+  diploma: { type: String, default: '' },
+  childCount: { type: String, default: '' },
+  availabilities: { type: mongoose.Schema.Types.Mixed, default: {} },
 
   // Validation Admin (Spécifique MamaSitters)
   idCard: { type: String, default: '' }, // Document d'identité (base64)
+  criminalRecord: { type: String, default: '' }, // Extrait de casier judiciaire (base64)
   isApproved: { type: Boolean, default: false }, // Validation par l'admin
   approvedAt: { type: Date },
+
+  // Engagements
+  hasCriminalRecordCommitment: { type: Boolean, default: false },
+  hasTaxCommitment: { type: Boolean, default: false },
 
   // Géolocalisation
   city: { type: String, default: '' },

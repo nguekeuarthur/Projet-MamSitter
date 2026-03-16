@@ -10,7 +10,11 @@ const router = Router();
 // Inscription avec envoi de mail de vérification
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, role, city, postalCode, bio, hourlyRate, avatar, idCard } = req.body;
+    const {
+      email, password, name, role, city, postalCode, bio, shortDescription,
+      hourlyRate, avatar, idCard, phone, languages, diploma, childCount,
+      availabilities, criminalRecord, hasCriminalRecordCommitment, hasTaxCommitment
+    } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -66,9 +70,18 @@ router.post('/register', async (req, res) => {
       city,
       postalCode,
       bio,
+      shortDescription,
       hourlyRate: hourlyRate ? Number(hourlyRate) : 0,
       avatar,
-      idCard: role === 'MamaSitter' ? idCard : undefined,
+      phone,
+      languages,
+      diploma,
+      childCount,
+      availabilities: role === 'MamaSitter' ? availabilities : undefined,
+      idCard,
+      criminalRecord,
+      hasCriminalRecordCommitment,
+      hasTaxCommitment: role === 'MamaSitter' ? hasTaxCommitment : false,
       isApproved: role === 'MamaSitter' ? false : true, // Les mamans sont approuvées par défaut, pas les mamasitters
       location
     });

@@ -25,20 +25,20 @@ export async function searchMamaSitters(filters: { city?: string; postalCode?: s
     if (filters.lng) params.append('lng', filters.lng.toString());
     if (filters.radius) params.append('radius', filters.radius.toString());
 
+    // Envoyer le token si disponible, sinon recherche publique
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const token = localStorage.getItem('mamsitter_token');
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_URL}/users/mamasitters?${params.toString()}`, {
         method: 'GET',
-        headers: authHeaders(),
+        headers,
     });
 
     if (!response.ok) {
-        if (response.status === 401) {
-            window.dispatchEvent(new CustomEvent('auth-error-401'));
-            throw new Error('Accès non autorisé. Veuillez vous connecter.');
-        }
         const data = await response.json().catch(() => ({}));
-        if (response.status === 403) {
-            window.dispatchEvent(new CustomEvent('auth-error-403', { detail: { message: data.error } }));
-        }
         throw new Error(data.error || 'Erreur lors de la recherche.');
     }
 
@@ -176,6 +176,17 @@ export async function createStripeAccountLink() {
     });
     if (!response.ok) {
         throw new Error('Erreur lors de la création du lien Stripe');
+    }
+    return response.json();
+}
+
+export async function simulateStripeSuccess() {
+    const response = await fetch(`${API_URL}/users/simulate-stripe-success`, {
+        method: 'POST',
+        headers: authHeaders(),
+    });
+    if (!response.ok) {
+        throw new Error('Erreur lors de la simulation');
     }
     return response.json();
 }

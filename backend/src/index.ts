@@ -1,15 +1,13 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
 import messageRoutes from './routes/messages';
 import bookingRoutes from './routes/bookings';
 import { User } from './models/User';
 import { geocode } from './utils/geocode';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -68,13 +66,23 @@ mongoose.connect(process.env.MONGODB_URI!)
   })
   .catch(err => console.error('❌ Erreur connexion MongoDB:', err));
 
-// Autoriser les requêtes depuis le frontend (localhost:5173 et 5174)
+// Middlewares
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }));
 
-app.use(express.json({ limit: '10mb' }));
+// IMPORTANT: Le webhook Stripe nécessite le raw body pour la vérification de signature.
+// On pourrait le mettre ici avant express.json(), mais comme on utilise express.raw() 
+// spécifiquement dans le routeur bookings, on doit s'assurer que express.json() ne l'intercepte pas.
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/bookings/webhook') {
+    next();
+  } else {
+    express.json({ limit: '10mb' })(req, res, next);
+  }
+});
+
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Routes
@@ -82,6 +90,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/bookings', bookingRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

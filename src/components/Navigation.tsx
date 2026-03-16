@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X, LogOut, User, Shield, MessageCircle } from 'lucide-react';
 import { signOut, getCurrentUser, logout } from '../services/authService';
 import BannedModal from './BannedModal';
@@ -75,22 +75,23 @@ export default function Navigation() {
               <a href="#/mamasitters" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                 Nos MamaSitters
               </a>
+              <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                Trouver une MamaSitter
+              </a>
 
               {user ? (
                 <>
-                  {user.role === 'Maman' && (
-                    <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4">
-                      Trouver une MamaSitter
-                    </a>
-                  )}
+
                   {user.role === 'Admin' && (
                     <a href="#/admin" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4 flex items-center gap-1.5">
                       <Shield className="w-4 h-4" /> Dashboard Admin
                     </a>
                   )}
-                  <a href="#/messages" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4 flex items-center gap-1.5">
-                    <MessageCircle className="w-4 h-4" /> Messages
-                  </a>
+                  {user.role !== 'Admin' && (
+                    <a href="#/messages" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4 flex items-center gap-1.5">
+                      <MessageCircle className="w-4 h-4" /> Messages
+                    </a>
+                  )}
                   <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm hover:text-sable transition-colors">
                     <User className="w-4 h-4" />
                     {user.name}
@@ -136,14 +137,13 @@ export default function Navigation() {
               <a href="#/mamasitters" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                 Nos MamaSitters
               </a>
+              <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                Trouver une MamaSitter
+              </a>
 
               {user ? (
                 <>
-                  {user.role === 'Maman' && (
-                    <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-                      Trouver une MamaSitter
-                    </a>
-                  )}
+
                   {user.role === 'Admin' && (
                     <a href="#/admin" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                       Dashboard Admin

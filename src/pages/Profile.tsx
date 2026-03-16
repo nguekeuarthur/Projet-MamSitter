@@ -1,7 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Camera, Loader2, MapPin, Euro, FileText, User, CreditCard, ShieldCheck } from 'lucide-react';
-import { getUserProfile, updateProfile, MamaSitter, fetchStripeStatus, createStripeAccountLink } from '../services/userService';
+import { Camera, Loader2, MapPin, Euro, FileText, User, CreditCard, ShieldCheck, History, Phone, Globe, GraduationCap, Clock, Sparkles } from 'lucide-react';
+import { getUserProfile, updateProfile, fetchStripeStatus, createStripeAccountLink } from '../services/userService';
 import { getCurrentUser } from '../services/authService';
+
+const LANGUAGES = ['Français', 'Anglais', 'Allemand', 'Espagnol', 'Italien', 'Arabe', 'Russe', 'Chinois', 'Autre'];
+const DIPLOMAS = [
+    'Aucun diplôme spécifique',
+    'CAP Petite Enfance',
+    'BEP Carrières Sanitaires et Sociales',
+    'BAFA',
+    "Diplôme d'État d'Auxiliaire de Puériculture",
+    "Diplôme d'État d'Éducateur de Jeunes Enfants",
+    "Titre Professionnel d'Assistant de Vie aux Familles (ADVF)",
+    'Formation Premiers Secours (PSC1)'
+];
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const SLOTS = ['Matin (8h-12h)', 'Après-midi (12h-18h)', 'Soirée (18h-22h)', 'Nuit (22h-8h)'];
 
 export default function Profile() {
     const [user, setUser] = useState<any>(null);
@@ -22,6 +36,15 @@ export default function Profile() {
     const [stripeStatus, setStripeStatus] = useState<any>(null);
     const [stripeLoading, setStripeLoading] = useState(false);
 
+    // Nouveaux champs MamaSitter
+    const [phone, setPhone] = useState('');
+    const [shortDescription, setShortDescription] = useState('');
+    const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+    const [diploma, setDiploma] = useState('');
+    const [availabilities, setAvailabilities] = useState<Record<string, string[]>>({
+        'Lundi': [], 'Mardi': [], 'Mercredi': [], 'Jeudi': [], 'Vendredi': [], 'Samedi': [], 'Dimanche': []
+    });
+
     useEffect(() => {
         async function loadData() {
             try {
@@ -41,6 +64,16 @@ export default function Profile() {
                 setAvatar(profileData.avatar || '');
                 setRib(profileData.rib || '');
                 setBankInfo(profileData.bankInfo || '');
+                setPhone(profileData.phone || '');
+                setShortDescription(profileData.shortDescription || '');
+                setSelectedLanguages(profileData.languages || []);
+                setDiploma(profileData.diploma || '');
+                if (profileData.availabilities && typeof profileData.availabilities === 'object') {
+                    setAvailabilities({
+                        'Lundi': [], 'Mardi': [], 'Mercredi': [], 'Jeudi': [], 'Vendredi': [], 'Samedi': [], 'Dimanche': [],
+                        ...profileData.availabilities
+                    });
+                }
 
                 if (profileData.role === 'MamaSitter') {
                     const status = await fetchStripeStatus();
@@ -81,6 +114,22 @@ export default function Profile() {
         }
     };
 
+    const toggleLanguage = (lang: string) => {
+        setSelectedLanguages(prev =>
+            prev.includes(lang) ? prev.filter(l => l !== lang) : [...prev, lang]
+        );
+    };
+
+    const toggleAvailability = (day: string, slot: string) => {
+        setAvailabilities(prev => {
+            const daySlots = prev[day] || [];
+            return {
+                ...prev,
+                [day]: daySlots.includes(slot) ? daySlots.filter(s => s !== slot) : [...daySlots, slot]
+            };
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -88,7 +137,7 @@ export default function Profile() {
         setSuccess('');
 
         try {
-            const updates: Partial<MamaSitter> = {
+            const updates: any = {
                 name,
                 city,
                 postalCode,
@@ -99,6 +148,11 @@ export default function Profile() {
                 updates.hourlyRate = Number(hourlyRate);
                 updates.rib = rib;
                 updates.bankInfo = bankInfo;
+                updates.phone = phone;
+                updates.shortDescription = shortDescription;
+                updates.languages = selectedLanguages;
+                updates.diploma = diploma;
+                updates.availabilities = availabilities;
             }
 
             await updateProfile(updates);
@@ -166,7 +220,7 @@ export default function Profile() {
                             </label>
                         </div>
                         <div className="text-center sm:text-left pt-2">
-                            <h3 className="font-poppins font-bold text-lg text-gray-800">Photo de profil</h3>
+                            <h3 className="font-poppins font-bold text-lg text-gray-800">Votre photo</h3>
                             <p className="text-sm text-gray-500 font-lato mt-1 mb-3 max-w-sm">
                                 Une photo claire et souriante rassure les mamans. Format recommandé : JPG, PNG (max 5Mo).
                             </p>
@@ -176,10 +230,10 @@ export default function Profile() {
                         </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {/* Informations Base */}
-                        <div className="space-y-6">
-                            <h3 className="font-poppins font-bold text-lg text-vert border-b border-gray-100 pb-2">Informations Générales</h3>
+                    {/* Informations Générales */}
+                    <div>
+                        <h3 className="font-poppins font-bold text-lg text-vert border-b border-gray-100 pb-2 mb-6">Informations Générales</h3>
+                        <div className="grid md:grid-cols-2 gap-5">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">Prénom & Nom</label>
                                 <input
@@ -190,7 +244,20 @@ export default function Profile() {
                                     required
                                 />
                             </div>
-
+                            {user?.role === 'MamaSitter' && (
+                                <div>
+                                    <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-2">
+                                        <Phone className="w-4 h-4 text-sable" /> Téléphone
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato"
+                                        placeholder="06 12 34 56 78"
+                                    />
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-2">
                                     <MapPin className="w-4 h-4 text-sable" /> Ville
@@ -203,7 +270,6 @@ export default function Profile() {
                                     placeholder="Ex. Paris"
                                 />
                             </div>
-
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">Code Postal</label>
                                 <input
@@ -215,108 +281,200 @@ export default function Profile() {
                                 />
                             </div>
                         </div>
+                    </div>
 
-                        {/* Informations MamaSitter spécifiques */}
-                        {user?.role === 'MamaSitter' && (
-                            <div className="space-y-6">
-                                <h3 className="font-poppins font-bold text-lg text-vert border-b border-gray-100 pb-2">Profil MamaSitter</h3>
+                    {/* Profil MamaSitter */}
+                    {user?.role === 'MamaSitter' && (
+                        <div>
+                            <h3 className="font-poppins font-bold text-lg text-vert border-b border-gray-100 pb-2 mb-6 flex items-center gap-2">
+                                <Sparkles className="w-5 h-5" /> Profil MamaSitter
+                            </h3>
 
-                                <div>
-                                    <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-2">
-                                        <Euro className="w-4 h-4 text-sable" /> Tarif Horaire (€)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={hourlyRate}
-                                        onChange={(e) => setHourlyRate(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato"
-                                        placeholder="ex: 20"
-                                    />
-                                </div>
+                            {/* Accroche */}
+                            <div className="mb-5">
+                                <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">
+                                    Accroche / Titre du profil (max 70 car.)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={shortDescription}
+                                    onChange={(e) => setShortDescription(e.target.value.slice(0, 70))}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-vert focus:ring-2 focus:ring-vert/20 transition-all font-lato"
+                                    placeholder="Ex: Douce et expérimentée, j'adore prendre soin des bébés"
+                                />
+                                <p className="text-[10px] text-right text-gray-400 mt-1">{shortDescription.length}/70</p>
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-2">
-                                        <FileText className="w-4 h-4 text-sable" /> À propos de moi (Bio)
-                                    </label>
-                                    <textarea
-                                        value={bio}
-                                        onChange={(e) => setBio(e.target.value)}
-                                        rows={6}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato resize-none leading-relaxed"
-                                        placeholder="Présentez-vous, décrivez votre expérience et ce que vous proposez aux mamans..."
-                                    />
-                                    <p className="text-xs text-gray-400 mt-2 font-lato text-right">{bio.length} caractères</p>
-                                </div>
+                            {/* Tarif */}
+                            <div className="mb-5">
+                                <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-2">
+                                    <Euro className="w-4 h-4 text-sable" /> Tarif Horaire (€)
+                                </label>
+                                <input
+                                    type="number"
+                                    value={hourlyRate}
+                                    onChange={(e) => setHourlyRate(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato"
+                                    placeholder="ex: 20"
+                                />
+                            </div>
 
-                                <h3 className="font-poppins font-bold text-lg text-vert border-b border-gray-100 pb-2 mt-8">Informations de Paiement</h3>
-                                <p className="text-xs text-gray-500 font-lato mb-4">
-                                    Ces informations ne sont visibles que par l'administration pour effectuer vos virements.
-                                </p>
+                            {/* Bio */}
+                            <div className="mb-5">
+                                <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-2">
+                                    <FileText className="w-4 h-4 text-sable" /> Bio / Présentation détaillée
+                                </label>
+                                <textarea
+                                    value={bio}
+                                    onChange={(e) => setBio(e.target.value)}
+                                    rows={5}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato resize-none leading-relaxed"
+                                    placeholder="Parlez-nous de vous, de votre parcours et de votre approche avec les familles..."
+                                />
+                                <p className="text-xs text-gray-400 mt-1 font-lato text-right">{bio.length} caractères</p>
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">RIB / IBAN</label>
-                                    <input
-                                        type="text"
-                                        value={rib}
-                                        onChange={(e) => setRib(e.target.value)}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato"
-                                        placeholder="Format IBAN recommandé"
-                                    />
-                                </div>
-
-                                {/* Section Stripe Connect */}
-                                <div className="mt-8 p-6 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
-                                            <CreditCard className="w-5 h-5 text-indigo-600" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-poppins font-bold text-gray-800">Stripe Connect</h4>
-                                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest italic">Paiement Automatique (Optionnel)</p>
-                                        </div>
-                                    </div>
-
-                                    {stripeStatus?.connected && stripeStatus?.payouts_enabled ? (
-                                        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
-                                            <ShieldCheck className="w-5 h-5 text-green-600" />
-                                            <div>
-                                                <p className="text-sm font-bold text-green-700">Compte Stripe Connecté</p>
-                                                <p className="text-xs text-green-600/80">Votre compte est prêt à recevoir des paiements automatiques.</p>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            <p className="text-sm text-gray-600 font-lato leading-relaxed">
-                                                En connectant votre compte Stripe, vous recevrez votre part (73%) <b>instantanément et automatiquement</b> à chaque réservation.
-                                            </p>
-                                            <button
-                                                type="button"
-                                                onClick={handleConnectStripe}
-                                                disabled={stripeLoading}
-                                                className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 disabled:opacity-50"
-                                            >
-                                                {stripeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Connecter à Stripe'}
-                                            </button>
-                                            <p className="text-[10px] text-center text-gray-400 font-medium">
-                                                Vous serez redirigée vers le portail sécurisé de Stripe pour finaliser votre inscription.
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 font-poppins mb-2">Autres infos bancaires (SWIFT, Nom Banque...)</label>
-                                    <textarea
-                                        value={bankInfo}
-                                        onChange={(e) => setBankInfo(e.target.value)}
-                                        rows={2}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sable focus:ring-2 focus:ring-sable/20 transition-all font-lato resize-none"
-                                        placeholder="Ex: BIC/SWIFT, Nom de la banque..."
-                                    />
+                            {/* Langues */}
+                            <div className="mb-5">
+                                <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-3">
+                                    <Globe className="w-4 h-4 text-sable" /> Langues parlées
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {LANGUAGES.map(lang => (
+                                        <button
+                                            key={lang}
+                                            type="button"
+                                            onClick={() => toggleLanguage(lang)}
+                                            className={`px-3.5 py-2 rounded-full border text-xs font-semibold transition-all ${selectedLanguages.includes(lang)
+                                                ? 'bg-vert border-vert text-white shadow-sm'
+                                                : 'bg-white border-gray-200 text-gray-600 hover:border-vert/50'
+                                                }`}
+                                        >
+                                            {lang}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
-                        )}
-                    </div>
+
+                            {/* Diplôme */}
+                            <div className="mb-5">
+                                <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-2">
+                                    <GraduationCap className="w-4 h-4 text-sable" /> Diplôme en lien avec le mamsitting
+                                </label>
+                                <select
+                                    value={diploma}
+                                    onChange={(e) => setDiploma(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-vert focus:ring-2 focus:ring-vert/20 transition-all font-lato text-sm cursor-pointer"
+                                >
+                                    <option value="">Sélectionnez un diplôme...</option>
+                                    {DIPLOMAS.map(d => (
+                                        <option key={d} value={d}>{d}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Disponibilités */}
+                            <div className="mb-5">
+                                <label className="block text-sm font-semibold flex items-center gap-2 text-gray-700 font-poppins mb-3">
+                                    <Clock className="w-4 h-4 text-sable" /> Mes disponibilités
+                                </label>
+                                <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 overflow-x-auto">
+                                    <table className="w-full text-xs font-lato border-collapse">
+                                        <thead>
+                                            <tr>
+                                                <th className="p-2 text-left text-gray-500 font-semibold"></th>
+                                                {SLOTS.map(s => (
+                                                    <th key={s} className="p-2 font-semibold text-gray-500 text-center whitespace-nowrap">
+                                                        {s.split(' ')[0]}
+                                                        <span className="block text-[9px] text-gray-400 font-normal">{s.match(/\(.*\)/)?.[0]}</span>
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {DAYS.map(day => (
+                                                <tr key={day} className="border-t border-gray-100">
+                                                    <td className="p-2 font-semibold text-gray-700">{day}</td>
+                                                    {SLOTS.map(slot => (
+                                                        <td key={slot} className="p-2 text-center">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => toggleAvailability(day, slot)}
+                                                                className={`w-7 h-7 rounded-lg border-2 transition-all font-bold text-xs ${availabilities[day]?.includes(slot)
+                                                                    ? 'bg-vert border-vert text-white shadow-sm'
+                                                                    : 'bg-white border-gray-200 text-transparent hover:border-vert/40'
+                                                                    }`}
+                                                            >
+                                                                ✓
+                                                            </button>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Section Stripe Connect */}
+                            <div className="mt-6 p-6 rounded-3xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 border border-indigo-100/50">
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                                        <CreditCard className="w-5 h-5 text-indigo-600" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-poppins font-bold text-gray-800">Recevoir mes paiements</h4>
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">via Stripe Connect</p>
+                                    </div>
+                                </div>
+
+                                {stripeStatus?.connected && stripeStatus?.payouts_enabled ? (
+                                    <div className="flex items-center gap-3 p-4 bg-white border border-green-100 rounded-2xl shadow-sm">
+                                        <ShieldCheck className="w-6 h-6 text-green-600 flex-shrink-0" />
+                                        <div>
+                                            <p className="text-sm font-bold text-green-700">Compte connecté ✓</p>
+                                            <p className="text-xs text-green-600/70">Vous recevez automatiquement 73% de chaque réservation.</p>
+                                        </div>
+                                    </div>
+                                ) : stripeStatus?.connected ? (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3 p-4 bg-white border border-orange-100 rounded-2xl">
+                                            <History className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                                            <div>
+                                                <p className="text-sm font-bold text-orange-600">Configuration en cours</p>
+                                                <p className="text-xs text-orange-500/80">Stripe vérifie vos informations. Cela peut prendre quelques heures pour activer les virements.</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleConnectStripe}
+                                            disabled={stripeLoading}
+                                            className="w-full py-3 bg-white text-orange-600 border border-orange-200 font-bold rounded-xl hover:bg-orange-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                        >
+                                            {stripeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Vérifier mon statut sur Stripe'}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <p className="text-sm text-gray-600 font-lato leading-relaxed">
+                                            Connectez votre compte Stripe pour recevoir <b>automatiquement votre part (73%)</b> à chaque réservation. Sécurisé et instantané.
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={handleConnectStripe}
+                                            disabled={stripeLoading}
+                                            className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 disabled:opacity-50"
+                                        >
+                                            {stripeLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><CreditCard className="w-4 h-4" /> Connecter mon compte Stripe</>}
+                                        </button>
+                                        <p className="text-[10px] text-center text-gray-400 font-medium">
+                                            Vous serez redirigée vers le portail sécurisé de Stripe.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="pt-6 border-t border-gray-100 flex justify-end">
                         <button
