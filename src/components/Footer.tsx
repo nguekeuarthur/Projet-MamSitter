@@ -13,9 +13,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div className="flex flex-col items-center md:items-start text-center md:text-left md:-mt-5">
-            <div className="mb-4 flex items-center justify-center md:justify-start h-20 md:ml-24">
-              <a href="#/" className="inline-block hover:scale-110 transition-transform duration-300">
-                <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-16 w-auto brightness-0 invert" />
+            <div className="mb-4 flex items-center justify-center md:justify-start h-12 md:ml-24">
+              <a href="#/" className="inline-block">
+                <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-12 w-auto brightness-0 invert" />
               </a>
             </div>
             <p className="text-sm leading-relaxed font-poppins max-w-xs mb-6">

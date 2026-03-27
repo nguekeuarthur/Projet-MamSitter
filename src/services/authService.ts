@@ -1,5 +1,5 @@
 // Service d'authentification personnalisé utilisant notre backend Node.js
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = 'http://localhost:8000/api';
 
 // ─── Inscription ────────────────────────────────────────────
 export async function register(payload: {

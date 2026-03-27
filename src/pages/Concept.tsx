@@ -58,7 +58,7 @@ export default function Concept() {
                 </div>
                 <div className="md:w-1/2">
                     <img
-                        src="/images/Post-par.jpg"
+                        src="https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&w=800"
                         alt="Concept MamSitter"
                         className="rounded-2xl shadow-lg w-full h-auto object-cover max-h-[400px]"
                     />

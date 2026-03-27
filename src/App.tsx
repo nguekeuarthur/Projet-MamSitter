@@ -6,7 +6,6 @@ import Testimonials from './components/Testimonials';
 import BecomeSitter from './components/BecomeSitter';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
-import CookieConsent from './components/CookieConsent';
 import AuthLogin from './components/AuthLogin';
 import AuthRegister from './components/AuthRegister';
 import ForgotPasswordPage from './pages/ForgotPassword';
@@ -25,6 +24,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Messages from './pages/Messages';
 import ServicesPage from './pages/Services';
 import BookingSuccess from './pages/BookingSuccess';
+import BecomeMamaSitter from './pages/BecomeMamaSitter';
 
 function App() {
   const [route, setRoute] = useState<string>(
@@ -242,6 +242,18 @@ function App() {
       </div>
     )
   }
+
+  if (route === '/devenir-mamasitter') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Navigation />
+        <main className="flex-grow pt-20">
+          <BecomeMamaSitter />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
       <Navigation />
@@ -251,7 +263,6 @@ function App() {
       <Testimonials />
       <BecomeSitter />
       <Footer />
-      <CookieConsent />
     </div>
   )
 }

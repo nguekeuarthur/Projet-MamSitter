@@ -58,11 +58,11 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className="fixed top-0 w-full bg-beige backdrop-blur-sm z-50 border-b border-vert/20 shadow-sm">
+      <nav className="fixed top-0 w-full bg-beige/95 backdrop-blur-sm z-50 border-b border-vert/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-28">
+          <div className="flex justify-between items-center h-20">
             <a href="#/" className="flex items-center space-x-2">
-              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-20 w-auto" />
+              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-12 w-auto" />
             </a>
 
             <div className="hidden md:flex items-center space-x-8">
@@ -77,6 +77,9 @@ export default function Navigation() {
               </a>
               <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                 Trouver une MamaSitter
+              </a>
+              <a href="#/devenir-mamasitter" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                Devenir MamaSitter
               </a>
 
               {user ? (
@@ -139,6 +142,9 @@ export default function Navigation() {
               </a>
               <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                 Trouver une MamaSitter
+              </a>
+              <a href="#/devenir-mamasitter" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                Devenir MamaSitter
               </a>
 
               {user ? (

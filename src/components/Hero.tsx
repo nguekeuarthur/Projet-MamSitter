@@ -53,7 +53,7 @@ export default function Hero() {
           <div className="relative">
             <div className="aspect-square bg-gradient-to-br from-sable/40 to-violet/40 rounded-3xl shadow-2xl overflow-hidden">
               <img
-                src="/images/Post-Partum.jpg"
+                src="https://images.pexels.com/photos/3737576/pexels-photo-3737576.jpeg?auto=compress&cs=tinysrgb&w=800"
                 alt="Maman avec son bébé"
                 className="w-full h-full object-cover"
               />

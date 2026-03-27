@@ -54,7 +54,10 @@ export default function BecomeSitter() {
               })}
             </div>
 
-            <button className="text-white px-8 py-4 rounded-full transition-colors font-semibold text-lg shadow-lg bg-sable hover:bg-sable/90 uppercase tracking-wide">
+            <button 
+              onClick={() => window.location.hash = '#/devenir-mamasitter'}
+              className="text-white px-8 py-4 rounded-full transition-colors font-semibold text-lg shadow-lg bg-sable hover:bg-sable/90 uppercase tracking-wide"
+            >
               Candidater maintenant
             </button>
           </div>
@@ -62,7 +65,7 @@ export default function BecomeSitter() {
           <div className="relative">
             <div className="aspect-[4/3] rounded-3xl shadow-2xl overflow-hidden bg-sable">
               <img
-                src="/images/Massage.jpg"
+                src="https://images.pexels.com/photos/3768131/pexels-photo-3768131.jpeg?auto=compress&cs=tinysrgb&w=800"
                 alt="MamaSitter au travail"
                 className="w-full h-full object-cover mix-blend-overlay opacity-90"
               />
