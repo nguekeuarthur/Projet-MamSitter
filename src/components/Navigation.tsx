@@ -60,25 +60,28 @@ export default function Navigation() {
     <>
       <nav className="fixed top-0 w-full bg-beige/95 backdrop-blur-sm z-50 border-b border-vert/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <a href="#/" className="flex items-center space-x-2">
-              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-12 w-auto" />
+          <div className="flex justify-between items-center h-24 py-3">
+            <a href="#/" className="flex items-center space-x-2 flex-shrink-0">
+              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-14 w-auto" />
             </a>
 
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#/services" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+            <div className="hidden lg:flex items-center space-x-6">
+              <a href="#/services" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Nos Services
               </a>
-              <a href="#/concept" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-                Le Concept
+              <a href="#/concept" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
+                Concept
               </a>
-              <a href="#/mamasitters" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              <a href="#/about" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
+                À Propos
+              </a>
+              <a href="#/mamasitters" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Nos MamaSitters
               </a>
-              <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-                Trouver une MamaSitter
+              <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
+                Trouver
               </a>
-              <a href="#/devenir-mamasitter" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              <a href="#/devenir-mamasitter" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Devenir MamaSitter
               </a>
 
@@ -86,22 +89,22 @@ export default function Navigation() {
                 <>
 
                   {user.role === 'Admin' && (
-                    <a href="#/admin" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4 flex items-center gap-1.5">
-                      <Shield className="w-4 h-4" /> Dashboard Admin
+                    <a href="#/admin" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs tracking-wide flex items-center gap-1.5 px-3 py-2">
+                      <Shield className="w-4 h-4" /> Admin
                     </a>
                   )}
                   {user.role !== 'Admin' && (
-                    <a href="#/messages" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide mr-4 flex items-center gap-1.5">
+                    <a href="#/messages" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs tracking-wide flex items-center gap-1.5 px-3 py-2">
                       <MessageCircle className="w-4 h-4" /> Messages
                     </a>
                   )}
-                  <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm hover:text-sable transition-colors">
+                  <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-xs hover:text-sable transition-colors px-3 py-2">
                     <User className="w-4 h-4" />
                     {user.name}
                   </a>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 border border-sable/30 text-sable px-5 py-2 rounded-full hover:bg-sable hover:text-white hover:border-sable transition-all duration-300 font-lato font-bold uppercase text-sm tracking-wide group shadow-sm hover:shadow-md"
+                    className="flex items-center gap-2 border border-sable/30 text-sable px-4 py-2 rounded-full hover:bg-sable hover:text-white hover:border-sable transition-all duration-300 font-lato font-bold uppercase text-xs tracking-wide group shadow-sm hover:shadow-md"
                   >
                     <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                     Déconnexion
@@ -109,10 +112,10 @@ export default function Navigation() {
                 </>
               ) : (
                 <>
-                  <a href="#/login" className="bg-sable text-white px-6 py-2.5 rounded-full hover:bg-sable/90 transition-colors font-lato font-bold uppercase text-sm tracking-wide inline-block">
+                  <a href="#/login" className="bg-sable text-white px-6 py-3 rounded-full hover:bg-sable/90 transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide inline-block whitespace-nowrap">
                     Connexion
                   </a>
-                  <a href="#/register" className="ml-3 border border-vert text-vert px-4 py-2.5 rounded-full hover:bg-vert/5 transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                  <a href="#/register" className="border border-vert text-vert px-6 py-3 rounded-full hover:bg-vert/5 transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                     S'inscrire
                   </a>
                 </>
@@ -129,21 +132,24 @@ export default function Navigation() {
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden bg-beige border-t border-vert/10">
-            <div className="px-4 py-6 space-y-4">
-              <a href="#/services" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+          <div className="lg:hidden bg-beige border-t border-vert/10">
+            <div className="px-4 py-6 space-y-5">
+              <a href="#/services" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Nos Services
               </a>
-              <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
-                Le Concept
+              <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+                Concept
               </a>
-              <a href="#/mamasitters" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              <a href="#/about" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+                À Propos
+              </a>
+              <a href="#/mamasitters" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Nos MamaSitters
               </a>
-              <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Trouver une MamaSitter
               </a>
-              <a href="#/devenir-mamasitter" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+              <a href="#/devenir-mamasitter" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Devenir MamaSitter
               </a>
 
@@ -151,17 +157,17 @@ export default function Navigation() {
                 <>
 
                   {user.role === 'Admin' && (
-                    <a href="#/admin" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                    <a href="#/admin" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                       Dashboard Admin
                     </a>
                   )}
-                  <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm mt-4 hover:text-sable transition-colors">
+                  <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm mt-6 py-2 hover:text-sable transition-colors">
                     <User className="w-4 h-4" />
                     {user.name}
                   </a>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-center mt-2 border border-sable/30 text-sable px-6 py-2.5 rounded-full hover:bg-sable hover:text-white transition-all duration-300 font-lato font-bold uppercase text-sm tracking-wide group"
+                    className="block w-full text-center mt-3 border border-sable/30 text-sable px-6 py-3 rounded-full hover:bg-sable hover:text-white transition-all duration-300 font-lato font-bold uppercase text-sm tracking-wide group"
                   >
                     <LogOut className="w-4 h-4 inline mr-2 transition-transform group-hover:-translate-x-0.5" />
                     Déconnexion
@@ -169,10 +175,10 @@ export default function Navigation() {
                 </>
               ) : (
                 <>
-                  <a href="#/login" className="block w-full text-center bg-sable text-white px-6 py-2.5 rounded-full hover:bg-sable/90 transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                  <a href="#/login" className="block w-full text-center bg-sable text-white px-6 py-3 rounded-full hover:bg-sable/90 transition-colors font-lato font-bold uppercase text-sm tracking-wide mt-4">
                     Connexion
                   </a>
-                  <a href="#/register" className="block w-full text-center mt-2 border border-vert text-vert px-6 py-2.5 rounded-full hover:bg-vert/5 transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                  <a href="#/register" className="block w-full text-center mt-3 border border-vert text-vert px-6 py-3 rounded-full hover:bg-vert/5 transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                     S'inscrire
                   </a>
                 </>

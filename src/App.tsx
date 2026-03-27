@@ -25,6 +25,7 @@ import Messages from './pages/Messages';
 import ServicesPage from './pages/Services';
 import BookingSuccess from './pages/BookingSuccess';
 import BecomeMamaSitter from './pages/BecomeMamaSitter';
+import About from './pages/About';
 
 function App() {
   const [route, setRoute] = useState<string>(
@@ -39,6 +40,11 @@ function App() {
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [route])
 
   // simple hash routing: '/', '/login', '/register', '/forgot-password'
   if (route === '/login') {
@@ -249,6 +255,18 @@ function App() {
         <Navigation />
         <main className="flex-grow pt-20">
           <BecomeMamaSitter />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (route === '/about') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Navigation />
+        <main className="flex-grow pt-20">
+          <About />
         </main>
         <Footer />
       </div>
