@@ -26,6 +26,9 @@ import ServicesPage from './pages/Services';
 import BookingSuccess from './pages/BookingSuccess';
 import BecomeMamaSitter from './pages/BecomeMamaSitter';
 import About from './pages/About';
+import Blog from './pages/Blog';
+import BlogArticle5Idees from './pages/BlogArticle5Idees';
+import BlogArticleAidePostPartum from './pages/BlogArticleAidePostPartum';
 
 function App() {
   const [route, setRoute] = useState<string>(
@@ -267,6 +270,42 @@ function App() {
         <Navigation />
         <main className="flex-grow pt-20">
           <About />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (route === '/blog') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Navigation />
+        <main className="flex-grow pt-20">
+          <Blog />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (route === '/blog/5-idees-cadeaux-naissance-originaux') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Navigation />
+        <main className="flex-grow pt-20">
+          <BlogArticle5Idees />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (route === '/blog/aide-post-partum-mamsitter-premieres-semaines') {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Navigation />
+        <main className="flex-grow pt-20">
+          <BlogArticleAidePostPartum />
         </main>
         <Footer />
       </div>

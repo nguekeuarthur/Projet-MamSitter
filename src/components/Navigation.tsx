@@ -62,7 +62,7 @@ export default function Navigation() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24 py-3">
             <a href="#/" className="flex items-center space-x-2 flex-shrink-0">
-              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-14 w-auto" />
+              <img src="/images/logo-couleurs.svg" alt="MamSitter" className="h-24 w-auto" />
             </a>
 
             <div className="hidden lg:flex items-center space-x-6">
@@ -72,17 +72,20 @@ export default function Navigation() {
               <a href="#/concept" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Concept
               </a>
-              <a href="#/about" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
-                À Propos
-              </a>
-              <a href="#/mamasitters" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
-                Nos MamaSitters
-              </a>
               <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Trouver
               </a>
               <a href="#/devenir-mamasitter" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Devenir MamaSitter
+              </a>
+              <a href="#/mamasitters" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
+                Nos MamaSitters
+              </a>
+              <a href="#/about" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
+                À Propos
+              </a>
+              <a href="#/blog" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
+                Blog
               </a>
 
               {user ? (
@@ -140,17 +143,20 @@ export default function Navigation() {
               <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Concept
               </a>
-              <a href="#/about" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
-                À Propos
-              </a>
-              <a href="#/mamasitters" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
-                Nos MamaSitters
-              </a>
               <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Trouver une MamaSitter
               </a>
               <a href="#/devenir-mamasitter" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Devenir MamaSitter
+              </a>
+              <a href="#/mamasitters" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+                Nos MamaSitters
+              </a>
+              <a href="#/about" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+                À Propos
+              </a>
+              <a href="#/blog" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+                Blog
               </a>
 
               {user ? (
