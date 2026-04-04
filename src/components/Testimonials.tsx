@@ -2,31 +2,31 @@ import { Star, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    name: 'Sophie Martin',
-    location: 'Paris',
+    name: 'Ola B.',
+    location: 'Ambilly',
     rating: 5,
-    text: "Ma MamaSitter a été d'un soutien incroyable pendant mes premières semaines. Elle m'a aidée à prendre confiance en moi et m'a donné des conseils précieux. Je recommande à 100% !",
+    text: "Après la naissance de ma fille, je me sentais débordée. Grâce à MamSitter, j'ai enfin pu souffler en toute confiance et soulager ma charge mentale. Une vraie bouffée d'oxygène pour moi et de douceur pour mon bébé !",
     image: 'https://images.pexels.com/photos/3768894/pexels-photo-3768894.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: 'Laura Dubois',
+    name: 'Dalya D.',
     location: 'Genève',
     rating: 5,
-    text: "Le forfait Sérénité m'a littéralement sauvé la vie. Avoir quelqu'un qui s'occupe des repas et du ménage pendant que je me reposais avec bébé : un luxe indispensable !",
+    text: "Au-delà de la garde, ma MamaSitter m'a apporté une écoute et un soutien moral dont j'avais vraiment besoin. J'ai eu l'impression d'être comprise et accompagnée. C'est une aide précieuse pour chaque maman.",
     image: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=200'
   },
   {
-    name: 'Emma Rousseau',
-    location: 'Lyon',
+    name: 'Hanna B.',
+    location: 'Annemass',
     rating: 5,
-    text: "J'ai opté pour le forfait Douce Nuit après une semaine épuisante. Pouvoir dormir une nuit complète m'a redonné de l'énergie. Service professionnel et bienveillant.",
+    text: "Être près de mon bébé tout en ayant du temps pour moi a été un véritable soulagement. Avec ma MamaSitter, j'ai eu confiance tout de suite. J'ai pu prendre du temps pour moi tout en étant sereine. Merci encore.",
     image: 'https://images.pexels.com/photos/3755511/pexels-photo-3755511.jpeg?auto=compress&cs=tinysrgb&w=200'
   }
 ];
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 bg-beige">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-vert font-poppins uppercase tracking-wide">
@@ -71,11 +71,7 @@ export default function Testimonials() {
         </div>
 
         <div className="mt-12 text-center">
-          <div className="inline-flex items-center space-x-2">
-            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            <span className="font-semibold text-sable">4.9/5</span>
-            <span className="text-vert/70">basé sur 320+ avis</span>
-          </div>
+         
         </div>
       </div>
     </section>

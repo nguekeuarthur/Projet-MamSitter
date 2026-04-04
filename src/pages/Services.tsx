@@ -1,15 +1,14 @@
-import { Check, Moon, Heart, Home, Sparkles, Clock, Shield, Zap, Star } from 'lucide-react';
+import { Check, Clock, Shield, Zap, Star, Heart } from 'lucide-react';
 import { useState } from 'react';
 import SitterSelectionModal from '../components/SitterSelectionModal';
 
 const packages = [
   {
     name: 'Douceur',
-    icon: Heart,
+    image: '/images/pack-douceur.jpg',
     priceEUR: '557',
     priceCHF: '619',
     duration: '3 heures',
-    color: '#D39280',
     features: [
       'Accompagnement à domicile',
       'Soutien émotionnel',
@@ -19,13 +18,12 @@ const packages = [
   },
   {
     name: 'Sérénité',
-    icon: Home,
+    image: '/images/pack-serenite.jpg',
     priceEUR: '749',
     priceCHF: '864',
     duration: '6 heures',
-    color: '#D39280',
     features: [
-      'Tout le forfait Douceur',
+      'Tout le coffret Douceur',
       'Aide aux tâches ménagères',
       'Préparation de repas',
       'Support WhatsApp 2 semaines',
@@ -35,13 +33,12 @@ const packages = [
   },
   {
     name: 'Harmonie',
-    icon: Sparkles,
+    image: '/images/pack-confort.jpg',
     priceEUR: '2230',
     priceCHF: '2589',
     duration: '12 heures',
-    color: '#D39280',
     features: [
-      'Tout le forfait Sérénité',
+      'Tout le coffret Sérénité',
       'Organisation de la maison',
       'Courses incluses',
       'Support WhatsApp 1 mois',
@@ -50,12 +47,11 @@ const packages = [
   },
   {
     name: 'Douce Nuit',
-    icon: Moon,
+    image: '/images/pack-douce-nuit.jpg',
     priceEUR: '350',
     priceCHF: '410',
     duration: 'Nuit (8h)',
     durationNote: 'À partir de',
-    color: '#899484',
     features: [
       'Garde de nuit complète',
       'Gestion des réveils',
@@ -194,70 +190,66 @@ export default function ServicesPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 px-2">
             {packages.map((pkg) => {
-              const Icon = pkg.icon;
               const isPopular = pkg.popular;
               return (
                 <div
                   key={pkg.name}
-                  className={`group relative bg-white rounded-[32px] p-8 transition-all duration-500 border-2 ${isPopular
+                  className={`group relative bg-white rounded-[32px] overflow-hidden transition-all duration-500 border-2 ${isPopular
                     ? 'border-sable shadow-2xl scale-105 z-10 shadow-sable/5'
                     : 'border-transparent hover:border-sable/20 shadow-xl shadow-black/5'
                     }`}
                 >
                   {isPopular && (
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-sable text-white px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-sable/20">
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-sable text-white px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-sable/20 z-20">
                       Plus populaire
                     </div>
                   )}
 
-                  <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 border border-white/20 transition-transform group-hover:scale-110 duration-500"
-                    style={{
-                      background: pkg.name === 'Douce Nuit'
-                        ? 'linear-gradient(135deg, #899484, #D39280)'
-                        : 'linear-gradient(135deg, #D39280, #C9C7E6)'
-                    }}
-                  >
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
+                  <img
+                    src={pkg.image}
+                    alt={pkg.name}
+                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
 
-                  <h3 className="text-3xl font-bold mb-4 text-sable font-poppins">{pkg.name}</h3>
+                  <div className="p-8">
+                    <h3 className="text-3xl font-bold mb-4 text-sable font-poppins">{pkg.name}</h3>
 
-                  <div className="mb-8">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-sm font-bold text-vert/40 uppercase tracking-tighter">Budget</span>
+                    <div className="mb-8">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-sm font-bold text-vert/40 uppercase tracking-tighter">Budget</span>
+                      </div>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-4xl font-bold text-sable font-poppins tracking-tighter italic">
+                          {currency === 'EUR' ? `${pkg.priceEUR}€` : `CHF ${pkg.priceCHF}`}
+                        </span>
+                        <span className="text-sm font-medium text-vert/50">/ {pkg.duration}</span>
+                      </div>
+                      {pkg.durationNote && (
+                        <span className="text-[10px] uppercase font-bold text-vert/30 tracking-widest">{pkg.durationNote}</span>
+                      )}
                     </div>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-4xl font-bold text-sable font-poppins tracking-tighter italic">
-                        {currency === 'EUR' ? `${pkg.priceEUR}€` : `CHF ${pkg.priceCHF}`}
-                      </span>
-                      <span className="text-sm font-medium text-vert/50">/ {pkg.duration}</span>
-                    </div>
-                    {pkg.durationNote && (
-                      <span className="text-[10px] uppercase font-bold text-vert/30 tracking-widest">{pkg.durationNote}</span>
-                    )}
+
+                    <ul className="space-y-4 mb-10 overflow-hidden">
+                      {pkg.features.map((feature, i) => (
+                        <li key={i} className="flex items-start space-x-3 group/item">
+                          <div className="mt-1 w-5 h-5 rounded-full bg-sable/5 flex items-center justify-center shrink-0 border border-sable/10 group-hover/item:border-sable/30 transition-colors">
+                            <Check className="w-3 h-3 text-sable" />
+                          </div>
+                          <span className="text-sm font-medium text-vert/70 leading-snug">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button
+                      onClick={() => handleReserve(pkg)}
+                      className={`w-full py-4 rounded-2xl font-bold transition-all uppercase tracking-widest text-xs shadow-lg shadow-black/5 hover:-translate-y-1 ${isPopular
+                        ? 'bg-sable text-white hover:bg-sable/90'
+                        : 'bg-vert text-white hover:bg-vert/90'
+                        }`}
+                    >
+                      Réserver ce coffret
+                    </button>
                   </div>
-
-                  <ul className="space-y-4 mb-10 overflow-hidden">
-                    {pkg.features.map((feature, i) => (
-                      <li key={i} className="flex items-start space-x-3 group/item">
-                        <div className="mt-1 w-5 h-5 rounded-full bg-sable/5 flex items-center justify-center shrink-0 border border-sable/10 group-hover/item:border-sable/30 transition-colors">
-                          <Check className="w-3 h-3 text-sable" />
-                        </div>
-                        <span className="text-sm font-medium text-vert/70 leading-snug">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={() => handleReserve(pkg)}
-                    className={`w-full py-4 rounded-2xl font-bold transition-all uppercase tracking-widest text-xs shadow-lg shadow-black/5 hover:-translate-y-1 ${isPopular
-                      ? 'bg-sable text-white hover:bg-sable/90'
-                      : 'bg-vert text-white hover:bg-vert/90'
-                      }`}
-                  >
-                    Réserver ce forfait
-                  </button>
                 </div>
               );
             })}

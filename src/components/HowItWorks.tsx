@@ -1,28 +1,28 @@
-import { Calendar, UserCheck, Home, Heart, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const steps = [
   {
-    icon: Calendar,
-    title: 'Réservez votre créneau',
-    description: 'Choisissez le forfait qui vous convient et sélectionnez vos dates préférées en ligne.',
+    image: '/images/trouver1.jpg',
+    title: 'Créez votre profil Maman',
+    description: 'Inscrivez-vous et créez votre profil en quelques minutes pour accéder à nos services.',
     color: '#D39280'
   },
   {
-    icon: UserCheck,
-    title: 'Rencontrez votre MamaSitter',
-    description: 'Nous vous mettons en relation avec une MamaSitter certifiée près de chez vous.',
+    image: '/images/trouver2.jpg',
+    title: 'Découvrez les MamaSitters proches de chez vous',
+    description: 'Parcourez les profils de nos MamaSitters certifiées et trouvez celle qui vous convient.',
     color: '#D39280'
   },
   {
-    icon: Home,
-    title: 'Accueil à domicile',
-    description: 'Votre MamaSitter vient chez vous aux horaires convenus pour vous accompagner.',
+    image: '/images/trouver3.jpg',
+    title: 'Choisissez le coffret qui vous correspond',
+    description: 'Sélectionnez le forfait qui répond à vos besoins et réservez vos dates.',
     color: '#D39280'
   },
   {
-    icon: Heart,
-    title: 'Profitez de ce moment',
-    description: 'Repos, conseils, soutien : concentrez-vous sur vous et votre bébé en toute sérénité.',
+    image: '/images/trouver4.jpg',
+    title: 'Profitez de vos moments de répit',
+    description: 'Laissez votre MamaSitter prendre soin de vous et de votre bébé en toute confiance.',
     color: '#D39280'
   }
 ];
@@ -32,9 +32,7 @@ export default function HowItWorks() {
     <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#FAF7F2]">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center space-x-2 bg-sable/5 px-4 py-1.5 rounded-full border border-sable/10 mb-6">
-            <span className="text-[10px] font-black text-sable uppercase tracking-[0.2em]">Parcours Sérénité</span>
-          </div>
+          
           <h2 className="text-4xl md:text-6xl font-bold mb-6 text-vert font-poppins tracking-tight">
             Comment ça <span className="text-sable italic">marche ?</span>
           </h2>
@@ -47,16 +45,21 @@ export default function HowItWorks() {
 
 
           {steps.map((step, index) => {
-            const Icon = step.icon;
             return (
               <div key={index} className="relative z-10 group">
                 <div className="flex flex-col items-center">
-                  {/* Icon Circle */}
-                  <div className="w-24 h-24 rounded-[32px] bg-white flex items-center justify-center mb-8 shadow-xl shadow-sable/5 border border-sable/5 group-hover:scale-110 group-hover:shadow-sable/10 transition-all duration-500 relative">
-                    <div className="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-sable text-white flex items-center justify-center text-sm font-black shadow-lg shadow-sable/20 border-4 border-[#FAF7F2]">
-                      {index + 1}
+                  {/* Image Container */}
+                  <div className="w-full rounded-[32px] bg-white flex items-center justify-center mb-8 shadow-xl shadow-sable/5 border border-sable/5 group-hover:scale-110 group-hover:shadow-sable/10 transition-all duration-500 relative overflow-hidden h-48">
+                    <img 
+                      src={step.image} 
+                      alt={step.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-12 h-12 bg-sable text-white flex items-center justify-center text-2xl font-black shadow-xl shadow-black/30">
+                        {index + 1}
+                      </div>
                     </div>
-                    <Icon className="w-10 h-10 text-sable" />
                   </div>
 
                   {/* Content */}

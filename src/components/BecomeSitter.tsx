@@ -65,15 +65,12 @@ export default function BecomeSitter() {
           <div className="relative">
             <div className="aspect-[4/3] rounded-3xl shadow-2xl overflow-hidden bg-sable">
               <img
-                src="https://images.pexels.com/photos/3768131/pexels-photo-3768131.jpeg?auto=compress&cs=tinysrgb&w=800"
+                src="https://images.pexels.com/photos/33930989/pexels-photo-33930989.jpeg?auto=compress&cs=tinysrgb&w=800"
                 alt="MamaSitter au travail"
                 className="w-full h-full object-cover mix-blend-overlay opacity-90"
               />
             </div>
-            <div className="absolute -bottom-6 -right-6 p-6 rounded-2xl shadow-xl max-w-xs bg-beige">
-              <div className="text-3xl font-bold mb-1 text-sable font-poppins">150+</div>
-              <div className="text-vert font-poppins">MamaSitters actives en France et Suisse</div>
-            </div>
+            
           </div>
         </div>
       </div>
