@@ -78,10 +78,10 @@ export default function HowItWorks() {
         </div>
 
         <div className="mt-20 text-center">
-          <button className="group relative inline-flex items-center gap-3 bg-vert text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-vert/90 transition-all hover:scale-105 shadow-xl shadow-vert/10 uppercase tracking-widest">
+          <a href="#/register" className="group relative inline-flex items-center gap-3 bg-vert text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-vert/90 transition-all hover:scale-105 shadow-xl shadow-vert/10 uppercase tracking-widest">
             <span>Commencer mon parcours</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-          </button>
+          </a>
         </div>
       </div>
     </section>

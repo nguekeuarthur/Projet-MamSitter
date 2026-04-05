@@ -46,8 +46,8 @@ export default function MamaSitters() {
                             </div>
 
                             <h1 className="text-4xl md:text-6xl font-bold text-vert mb-8 font-poppins leading-tight tracking-tight">
-                                Bien plus que des nounous, <br />
-                                <span className="text-sable italic font-light">vos alliées de l'ombre.</span>
+                                Une MamaSitter,la grande soeur de coeur bienveillante <br />
+                                <span className="text-sable italic font-light"> dont toute femme a besoin durant son post-partum.</span>
                             </h1>
 
                             <p className="text-lg md:text-xl text-vert/60 font-poppins font-light leading-relaxed mb-10">
@@ -74,9 +74,8 @@ export default function MamaSitters() {
 
                             <div className="grid gap-6">
                                 {[
-                                    { title: "Puéricultrices", desc: "Le savoir-faire médical et la douceur du métier." },
-                                    { title: "Mères accomplies", desc: "L'expérience irremplaçable d'avoir déjà traversé cette étape." },
-                                    { title: "Auxiliaires", desc: "Le professionnalisme au service de votre foyer." }
+                                    { title: "Formation Batch Cooking", desc: "Avec une cheffe culinaire pour préparer des repas sains et adaptés au post-partum." },
+                                    { title: "Formation Psychologie Post-Partum", desc: "Avec une psychologue professionnelle pour écouter, conseiller et accompagner avec bienveillance." }
                                 ].map((type, i) => (
                                     <div key={i} className="flex gap-6 bg-white/50 backdrop-blur-sm p-6 rounded-[32px] border border-white/60 hover:bg-white transition-all duration-300 group">
                                         <div className="w-12 h-12 rounded-2xl bg-sable/10 flex items-center justify-center shrink-0 group-hover:bg-sable transition-all">
@@ -144,10 +143,9 @@ export default function MamaSitters() {
                         <span className="text-sable italic font-light">pour votre sérénité.</span>
                     </h2>
 
-                    <div className="grid md:grid-cols-3 gap-12 mb-16 max-w-4xl mx-auto">
+                    <div className="grid md:grid-cols-2 gap-12 mb-16 max-w-4xl mx-auto">
                         {[
                             { title: "Identité Vérifiée", desc: "Pièce d'identité et casier judiciaire systématique." },
-                            { title: "Recommandations", desc: "Profils validés par d'anciens employeurs." },
                             { title: "Formation", desc: "Accès à des formations spécifiques post-partum." }
                         ].map((item, i) => (
                             <div key={i} className="space-y-3">

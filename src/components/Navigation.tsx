@@ -69,9 +69,9 @@ export default function Navigation() {
               <a href="#/services" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Nos Services
               </a>
-              <a href="#/concept" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
+              {/* <a href="#/concept" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Concept
-              </a>
+              </a> */}
               <a href="#/search" className="text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-xs xl:text-sm tracking-wide whitespace-nowrap">
                 Trouver
               </a>
@@ -140,9 +140,9 @@ export default function Navigation() {
               <a href="#/services" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Nos Services
               </a>
-              <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+              {/* <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Concept
-              </a>
+              </a> */}
               <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Trouver une MamaSitter
               </a>

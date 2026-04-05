@@ -3,6 +3,7 @@ import Hero from './components/Hero';
 import Services from './components/Services';
 import HowItWorks from './components/HowItWorks';
 import Testimonials from './components/Testimonials';
+import CoverageAndGifts from './components/CoverageAndGifts';
 import BecomeSitter from './components/BecomeSitter';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
@@ -15,7 +16,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import MentionsLegales from './pages/MentionsLegales';
 import CGV from './pages/CGV';
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
-import Concept from './pages/Concept';
+// import Concept from './pages/Concept'; // Masqué temporairement
 import MamaSitters from './pages/MamaSitters';
 import Contact from './pages/Contact';
 import MamaSitterSearch from './pages/MamaSitterSearch';
@@ -144,17 +145,17 @@ function App() {
     )
   }
 
-  if (route === '/concept') {
-    return (
-      <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
-        <Navigation />
-        <main className="flex-grow pt-32 pb-12">
-          <Concept />
-        </main>
-        <Footer />
-      </div>
-    )
-  }
+  // if (route === '/concept') {
+  //   return (
+  //     <div className="min-h-screen bg-[#FAF7F2] flex flex-col">
+  //       <Navigation />
+  //       <main className="flex-grow pt-32 pb-12">
+  //         <Concept />
+  //       </main>
+  //       <Footer />
+  //     </div>
+  //   )
+  // }
 
   if (route === '/mamasitters') {
     return (
@@ -318,7 +319,8 @@ function App() {
       <Services />
       <HowItWorks />
       <Testimonials />
-      <BecomeSitter />
+      <CoverageAndGifts />
+      {/* <BecomeSitter /> */}
       <Footer />
     </div>
   )

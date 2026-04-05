@@ -35,7 +35,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4 font-poppins uppercase tracking-wide">Pour les mamans</h3>
             <ul className="space-y-2 text-sm font-lato">
               <li><a href="#services" className="hover:text-sable transition-colors">Nos forfaits</a></li>
-              <li><a href="#/concept" className="hover:text-sable transition-colors">Notre concept</a></li>
+              {/* <li><a href="#/concept" className="hover:text-sable transition-colors">Notre concept</a></li> */}
               <li><a href="#" className="hover:text-sable transition-colors">FAQ / Blog</a></li>
             </ul>
           </div>
