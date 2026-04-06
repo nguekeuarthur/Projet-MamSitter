@@ -39,14 +39,14 @@ export default function Hero() {
               </ul>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="group bg-sable text-white px-8 py-4 rounded-full hover:bg-sable/90 transition-all font-semibold text-lg flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <a href='#/search' className="group bg-sable text-white px-8 py-4 rounded-2xl hover:bg-sable/90 transition-all font-semibold text-base inline-flex items-center gap-3 shadow-lg hover:shadow-xl">
                 <span>Réserver un accompagnement</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button className="bg-white text-vert px-8 py-4 rounded-full hover:bg-violet/30 transition-colors font-semibold text-lg border-2 border-vert/20">
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform shrink-0" />
+              </a>
+              <a href='#/services' className="bg-white text-vert px-8 py-4 rounded-2xl hover:bg-violet/30 transition-colors font-semibold text-base border border-vert/10 inline-flex items-center justify-center">
                 Découvrir nos coffrets
-              </button>
+              </a>
             </div>
           </div>
 

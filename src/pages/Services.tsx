@@ -122,14 +122,14 @@ export default function ServicesPage() {
               Des solutions douces et sur-mesure pour transformer vos premières semaines avec bébé en souvenirs sereins.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4">
+            {/* <div className="flex flex-wrap justify-center gap-4">
               <button className="bg-vert text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-vert/90 transition-all hover:scale-[1.02] shadow-xl shadow-vert/10 uppercase tracking-wide">
                 Découvrir nos forfaits
               </button>
               <button className="bg-white text-vert border-2 border-vert/5 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-white/80 transition-all shadow-lg shadow-black/5 uppercase tracking-wide">
                 Nous contacter
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

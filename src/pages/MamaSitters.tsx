@@ -54,11 +54,11 @@ export default function MamaSitters() {
                                 Découvrez les femmes qui veillent sur votre équilibre, entre expertise bienveillante et soutien quotidien.
                             </p>
 
-                            <div className="flex flex-wrap gap-4">
-                                <button className="bg-vert text-white px-8 py-4 rounded-2xl font-bold text-sm hover:translate-y-[-2px] transition-all shadow-lg shadow-vert/10 uppercase tracking-widest">
+                            {/* <div className="flex flex-wrap gap-4">
+                                <a href='#search' className="bg-vert text-white px-8 py-4 rounded-2xl font-bold text-sm hover:translate-y-[-2px] transition-all shadow-lg shadow-vert/10 uppercase tracking-widest">
                                     Trouver ma MamaSitter
-                                </button>
-                            </div>
+                                </a>
+                            </div> */}
                         </div>
 
                         {/* Right Content: Selection Grid */}
@@ -156,12 +156,12 @@ export default function MamaSitters() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <button className="bg-vert text-white px-8 py-4 rounded-2xl font-bold text-sm hover:translate-y-[-2px] transition-all shadow-lg shadow-vert/10 uppercase tracking-widest">
+                        <a href='#/search' className="bg-vert text-white px-8 py-4 rounded-2xl font-bold text-sm hover:translate-y-[-2px] transition-all shadow-lg shadow-vert/10 uppercase tracking-widest">
                             Trouver ma MamaSitter
-                        </button>
-                        <button className="text-vert/40 hover:text-vert font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2">
+                        </a>
+                        <a href='#/register' className="text-vert/40 hover:text-vert font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2">
                             Devenir MamaSitter <ArrowRight className="w-4 h-4" />
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
