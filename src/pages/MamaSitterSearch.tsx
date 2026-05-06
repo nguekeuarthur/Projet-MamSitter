@@ -409,6 +409,43 @@ export default function MamaSitterSearch() {
                         </div>
                     )}
                 </div>
+
+                {/* Notice Section */}
+                <section className="mt-20">
+                    <div className="relative overflow-hidden rounded-[34px] min-h-[520px] sm:min-h-[560px] lg:min-h-[480px]">
+                        <img
+                            src="/images/asavoir.jpg"
+                            alt="Fleurs pastel"
+                            className="absolute inset-0 w-full h-full object-cover"
+                            loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#f4e1d6]/30 via-[#f4e1d6]/15 to-[#f4e1d6]/70"></div>
+
+                        <div className="relative z-10 h-full w-full flex items-center justify-center lg:justify-end p-4 sm:p-6 lg:p-10">
+                            <div className="w-full max-w-[640px] lg:max-w-[560px] bg-[#F5F5F5]/95 rounded-[22px] p-6 sm:p-8 lg:p-10 shadow-xl text-center border border-white/70">
+                                <h3 className="text-3xl sm:text-4xl font-poppins font-bold text-sable mb-5">À savoir</h3>
+
+                                <p className="text-vert/80 font-lato text-base sm:text-lg leading-relaxed mb-5">
+                                    MamSitter n&apos;emploie pas directement les MamaSitters.
+                                    <strong className="text-vert"> Chaque MamaSitter est engagée par la famille elle-même.</strong>
+                                </p>
+
+                                <p className="text-vert/75 font-lato text-base sm:text-lg leading-relaxed mb-7">
+                                    Notre rôle est de vous offrir une plateforme sécurisée et bienveillante : nous sélectionnons chaque profil
+                                    avec soin (entretiens, vérifications, valeurs humaines) pour garantir aux mamans des rencontres de confiance
+                                    avec de vraies personnes compétentes.
+                                </p>
+
+                                <a
+                                    href="#/contact"
+                                    className="inline-flex mx-auto items-center justify-center px-6 py-3 bg-sable text-white rounded-full font-poppins font-bold text-xs sm:text-sm uppercase tracking-wider hover:bg-sable/90 transition-colors"
+                                >
+                                    Une question ? contactez-nous !
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             {/* Premium Detail Modal */}
