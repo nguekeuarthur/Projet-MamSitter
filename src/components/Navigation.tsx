@@ -50,10 +50,24 @@ export default function Navigation() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleHashChange = () => setIsMenuOpen(false);
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
   async function handleLogout() {
     await signOut();
     setUser(null);
+    setIsMenuOpen(false);
     window.location.hash = '/';
+  }
+
+  function handleMobileNavClick() {
+    setIsMenuOpen(false);
   }
 
   return (
@@ -137,25 +151,25 @@ export default function Navigation() {
         {isMenuOpen && (
           <div className="lg:hidden bg-beige border-t border-vert/10">
             <div className="px-4 py-6 space-y-5">
-              <a href="#/services" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+              <a href="#/services" onClick={handleMobileNavClick} className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Nos Services
               </a>
               {/* <a href="#/concept" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Concept
               </a> */}
-              <a href="#/search" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+              <a href="#/search" onClick={handleMobileNavClick} className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Trouver une MamaSitter
               </a>
-              <a href="#/devenir-mamasitter" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+              <a href="#/devenir-mamasitter" onClick={handleMobileNavClick} className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Devenir MamaSitter
               </a>
-              <a href="#/mamasitters" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+              <a href="#/mamasitters" onClick={handleMobileNavClick} className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Nos MamaSitters
               </a>
-              <a href="#/about" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+              <a href="#/about" onClick={handleMobileNavClick} className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 À Propos
               </a>
-              <a href="#/blog" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+              <a href="#/blog" onClick={handleMobileNavClick} className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                 Blog
               </a>
 
@@ -163,11 +177,11 @@ export default function Navigation() {
                 <>
 
                   {user.role === 'Admin' && (
-                    <a href="#/admin" className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
+                    <a href="#/admin" onClick={handleMobileNavClick} className="block text-vert hover:text-sable transition-colors font-lato font-bold uppercase text-sm tracking-wide py-2">
                       Dashboard Admin
                     </a>
                   )}
-                  <a href="#/profile" className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm mt-6 py-2 hover:text-sable transition-colors">
+                  <a href="#/profile" onClick={handleMobileNavClick} className="flex items-center gap-1.5 text-vert font-lato font-bold text-sm mt-6 py-2 hover:text-sable transition-colors">
                     <User className="w-4 h-4" />
                     {user.name}
                   </a>
@@ -181,10 +195,10 @@ export default function Navigation() {
                 </>
               ) : (
                 <>
-                  <a href="#/login" className="block w-full text-center bg-sable text-white px-6 py-3 rounded-full hover:bg-sable/90 transition-colors font-lato font-bold uppercase text-sm tracking-wide mt-4">
+                  <a href="#/login" onClick={handleMobileNavClick} className="block w-full text-center bg-sable text-white px-6 py-3 rounded-full hover:bg-sable/90 transition-colors font-lato font-bold uppercase text-sm tracking-wide mt-4">
                     Connexion
                   </a>
-                  <a href="#/register" className="block w-full text-center mt-3 border border-vert text-vert px-6 py-3 rounded-full hover:bg-vert/5 transition-colors font-lato font-bold uppercase text-sm tracking-wide">
+                  <a href="#/register" onClick={handleMobileNavClick} className="block w-full text-center mt-3 border border-vert text-vert px-6 py-3 rounded-full hover:bg-vert/5 transition-colors font-lato font-bold uppercase text-sm tracking-wide">
                     S'inscrire
                   </a>
                 </>
