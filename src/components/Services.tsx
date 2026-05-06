@@ -1,19 +1,39 @@
 import { Check } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SitterSelectionModal from './SitterSelectionModal';
 
-const packages = [
+type ServicePackage = {
+  name: string;
+  image: string;
+  priceEUR: string;
+  priceCHF: string;
+  duration: string;
+  shortDescription: string;
+  previewFeatures: string[];
+  fullFeatures: string[];
+  badge?: string;
+  pricePrefix?: string;
+  popular?: boolean;
+};
+
+const packages: ServicePackage[] = [
   {
     name: 'Douceur',
     image: '/images/pack-douceur.jpg',
     priceEUR: '557',
     priceCHF: '619',
-    duration: '3 heures',
-    features: [
-      'Accompagnement à domicile',
-      'Soutien émotionnel',
-      'Conseils pratiques bébé',
-      'Support WhatsApp 1 semaine'
+    badge: 'classique',
+    shortDescription: 'Pour un premier soutien post-accouchement.',
+    duration: '5 visites de 3h chacune',
+    previewFeatures: [
+      'Écoute et conseils personnalisés pour vous soutenir et vous guider dans votre quotidien post-partum'
+    ],
+    fullFeatures: [
+      'Écoute et conseils personnalisés pour vous soutenir et vous guider dans votre quotidien post-partum',
+      'Aide sur-mesure : garde du bébé le temps d’un moment pour vous, rangement, organisation de la maison, préparation de repas adaptés à vos besoins, balades accompagnées avec bébé pour prendre l’air et vous détendre, aide au bain de bébé',
+      'Guidance pour la semaine : planification, conseils pratiques et astuces pour gagner du temps',
+      'Suivi WhatsApp 5j/7 pendant la durée du pack pour répondre à vos questions et ajuster l’accompagnement selon vos besoins',
+      'Chaque visite est flexible : vous choisissez ce qui est le plus utile pour vous ce jour-là'
     ]
   },
   {
@@ -21,13 +41,18 @@ const packages = [
     image: '/images/pack-serenite.jpg',
     priceEUR: '749',
     priceCHF: '864',
-    duration: '6 heures',
-    features: [
-      'Tout le coffret Douceur',
-      'Aide aux tâches ménagères',
-      'Préparation de repas',
-      'Support WhatsApp 2 semaines',
-      'Garde de bébé pendant repos'
+    badge: 'le plus choisi',
+    shortDescription: 'Un accompagnement complet pour vous sentir sereine et soutenue',
+    duration: '21 heures de visites réparties sur 4 semaines selon vos besoins.',
+    previewFeatures: [
+      'Écoute et conseils personnalisés pour vous soutenir et vous guider dans votre quotidien post-partum'
+    ],
+    fullFeatures: [
+      'Écoute et conseils personnalisés pour vous soutenir et vous guider dans votre quotidien post-partum',
+      'Aide sur-mesure : garde du bébé le temps d’un moment pour vous, rangement, organisation de la maison, batch cooking pour 3 jours d’avance, balades accompagnées avec bébé pour prendre l’air et vous détendre, aide au bain de bébé',
+      'Guidance pour la semaine : planification, conseils pratiques et astuces pour gagner du temps',
+      'Suivi WhatsApp 5j/7 pendant la durée du pack pour répondre à vos questions et ajuster l’accompagnement selon vos besoins',
+      'Chaque visite est flexible : vous choisissez ce qui est le plus utile pour vous ce jour-là'
     ],
     popular: true
   },
@@ -36,13 +61,21 @@ const packages = [
     image: '/images/pack-confort.jpg',
     priceEUR: '2230',
     priceCHF: '2589',
-    duration: '12 heures',
-    features: [
-      'Tout le coffret Sérénité',
-      'Organisation de la maison',
-      'Courses incluses',
-      'Support WhatsApp 1 mois',
-      'Suivi personnalisé'
+    badge: 'premium',
+    shortDescription: 'Un accompagnement complet et sur-mesure pour vous offrir sérénité et bien-être pendant plusieurs semaines',
+    duration: '63 heures de visites, réparties selon vos besoins sur 3 mois.',
+    previewFeatures: [
+      'Écoute et conseils personnalisés pour vous soutenir pleinement dans votre quotidien post-partum'
+    ],
+    fullFeatures: [
+      'Écoute et conseils personnalisés pour vous soutenir pleinement dans votre quotidien post-partum',
+      'Soutien au quotidien : garde du bébé le temps d’un moment pour vous, rangement, organisation de la maison, préparation de repas adaptés à vos besoins, balades accompagnées avec bébé pour prendre l’air et vous détendre, aide au bain de bébé',
+      'Batch cooking et préparation de repas plus élaborés pour la semaine',
+      'Petites attentions bien-être : tisane spéciale allaitement, astuces détente, mini collation santé, huile de massage pour bébé',
+      'Guidance pour la semaine : planification, conseils pratiques, suivi de routines, astuces pour gagner du temps et mieux s’organiser',
+      'Temps de repos garanti pour vous : chaque visite peut inclure un bon moment où vous pouvez vous détendre pleinement pendant que votre MamaSitter s’occupe de bébé',
+      'Suivi WhatsApp illimité pendant 3 mois pour répondre à vos questions et ajuster l’accompagnement selon vos besoins',
+      'Chaque visite est flexible et personnalisée : vous choisissez ce qui est le plus utile pour vous ce jour-là'
     ]
   },
   {
@@ -50,14 +83,19 @@ const packages = [
     image: '/images/pack-douce-nuit.jpg',
     priceEUR: '350',
     priceCHF: '410',
-    duration: 'Nuit (8h)',
-    durationNote: 'À partir de',
-    features: [
-      'Garde de nuit complète',
-      'Gestion des réveils',
-      'Biberons si nécessaire',
-      'Parents peuvent dormir',
-      'Rapport matinal détaillé'
+    pricePrefix: 'À partir de',
+    shortDescription: 'Un accompagnement post-partum nocturne pensé pour les mamans qui ressentent le besoin d’être relayées la nuit.',
+    duration: 'À partir d\'une nuit de 10 heures.',
+    previewFeatures: [
+      'Prise en charge du bébé ou des bébés en cas de jumeaux/jumelles (changes, biberons, rendormissement)'
+    ],
+    fullFeatures: [
+      'Prise en charge du bébé ou des bébés en cas de jumeaux/jumelles (changes, biberons, rendormissement)',
+      'Une présence calme, douce et sécurisante, favorisant un climat apaisé',
+      'Un relais nocturne, pour que vous puissiez dormir et vous reposer pleinement',
+      'Une transmission au matin pour vous permettre de reprendre le relais en douceur',
+      'Des conseils si besoin',
+      'Les horaires peuvent être ajustés selon votre situation et vos besoins mais chaque nuit accompagnée par une MamaSitter est de 10 heures.'
     ]
   }
 ];
@@ -66,12 +104,39 @@ const packages = [
 export default function Services() {
   const [currency, setCurrency] = useState<'EUR' | 'CHF'>('EUR');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPkg, setSelectedPkg] = useState<any>(null);
+  const [selectedPkg, setSelectedPkg] = useState<ServicePackage | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [detailsPkg, setDetailsPkg] = useState<ServicePackage | null>(null);
 
-  const handleReserve = (pkg: any) => {
+  const handleReserve = (pkg: ServicePackage) => {
     setSelectedPkg(pkg);
     setIsModalOpen(true);
   };
+
+  const handleOpenDetails = (pkg: ServicePackage) => {
+    setDetailsPkg(pkg);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsModalOpen(false);
+    setDetailsPkg(null);
+  };
+
+  useEffect(() => {
+    if (!isDetailsModalOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseDetails();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDetailsModalOpen]);
 
   return (
     <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 bg-beige">
@@ -132,22 +197,33 @@ export default function Services() {
 
                 <div className="p-6">
                   <h3 className="text-2xl font-bold mb-2 text-sable font-poppins">{pkg.name}</h3>
+                  {pkg.badge && (
+                    <p className="text-[11px] uppercase font-black tracking-[0.15em] text-vert/40 mb-2">({pkg.badge})</p>
+                  )}
+                  <p className="text-sm text-vert/70 leading-relaxed mb-4">{pkg.shortDescription}</p>
                   <div className="mb-4">
                     <span className="text-3xl font-bold text-sable">
-                      {pkg.durationNote && <span className="text-xs block font-normal text-vert/60">{pkg.durationNote} </span>}
+                      {pkg.pricePrefix && <span className="text-xs block font-normal text-vert/60">{pkg.pricePrefix} </span>}
                       {currency === 'EUR' ? `${pkg.priceEUR}€` : `CHF ${pkg.priceCHF}`}
                     </span>
-                    <span className="ml-2 text-vert/70">/ {pkg.duration}</span>
+                    <p className="text-vert/70 mt-1">{pkg.duration}</p>
                   </div>
 
                   <ul className="space-y-3 mb-6">
-                    {pkg.features.map((feature, index) => (
+                    {pkg.previewFeatures.map((feature, index) => (
                       <li key={index} className="flex items-start space-x-3">
                         <Check className="w-5 h-5 flex-shrink-0 mt-0.5 text-sable" />
                         <span className="text-vert/80">{feature}</span>
                       </li>
                     ))}
                   </ul>
+
+                  <button
+                    onClick={() => handleOpenDetails(pkg)}
+                    className="w-full py-3 rounded-xl font-semibold transition-colors border border-sable/30 text-sable uppercase tracking-wide hover:bg-sable/5 mb-3"
+                  >
+                    Voir plus
+                  </button>
 
                   <button
                     onClick={() => handleReserve(pkg)}
@@ -170,6 +246,54 @@ export default function Services() {
           pkg={selectedPkg}
           currency={currency}
         />
+      )}
+
+      {isDetailsModalOpen && detailsPkg && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={handleCloseDetails}
+        >
+          <div
+            className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="px-6 md:px-8 py-5 border-b border-sable/15 flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-2xl md:text-3xl font-bold text-sable font-poppins">Coffret {detailsPkg.name}</h3>
+                <p className="text-sm text-vert/70 mt-1">{detailsPkg.shortDescription}</p>
+              </div>
+              <button
+                onClick={handleCloseDetails}
+                className="text-vert/50 hover:text-vert text-sm font-bold uppercase tracking-wider"
+              >
+                Fermer
+              </button>
+            </div>
+
+            <div className="px-6 md:px-8 py-6 overflow-y-auto">
+              <div className="mb-6">
+                {detailsPkg.pricePrefix && (
+                  <p className="text-xs uppercase tracking-wider font-bold text-vert/40">{detailsPkg.pricePrefix}</p>
+                )}
+                <p className="text-3xl font-bold text-sable font-poppins italic">
+                  {currency === 'EUR' ? `${detailsPkg.priceEUR}€` : `CHF ${detailsPkg.priceCHF}`}
+                </p>
+                <p className="text-sm text-vert/60 mt-1">{detailsPkg.duration}</p>
+              </div>
+
+              <ul className="space-y-4">
+                {detailsPkg.fullFeatures.map((feature: string, index: number) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="mt-1 w-5 h-5 rounded-full bg-sable/10 flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 text-sable" />
+                    </div>
+                    <span className="text-sm md:text-base text-vert/80 leading-relaxed">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );
