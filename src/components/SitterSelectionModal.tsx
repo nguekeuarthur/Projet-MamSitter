@@ -28,6 +28,31 @@ export default function SitterSelectionModal({ isOpen, onClose, pkg, currency }:
         }
     }, [isOpen]);
 
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
+        const scrollY = window.scrollY;
+        const originalOverflow = document.body.style.overflow;
+        const originalPosition = document.body.style.position;
+        const originalTop = document.body.style.top;
+        const originalWidth = document.body.style.width;
+
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+
+        return () => {
+            document.body.style.overflow = originalOverflow;
+            document.body.style.position = originalPosition;
+            document.body.style.top = originalTop;
+            document.body.style.width = originalWidth;
+            window.scrollTo(0, scrollY);
+        };
+    }, [isOpen]);
+
     const loadSitters = async () => {
         setLoading(true);
         try {
@@ -70,15 +95,15 @@ export default function SitterSelectionModal({ isOpen, onClose, pkg, currency }:
     );
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-3 pt-6 md:p-6 overflow-y-auto">
             <div className="absolute inset-0 bg-vert/20 backdrop-blur-md" onClick={onClose}></div>
 
-            <div className="relative bg-[#FAF7F2] w-full max-w-2xl max-h-[90vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white">
+            <div className="relative mt-2 md:mt-0 bg-[#FAF7F2] w-full max-w-2xl max-h-[calc(100dvh-1.5rem)] md:max-h-[90vh] rounded-[28px] md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white">
                 {/* Header */}
-                <div className="p-8 border-b border-sable/10 flex items-center justify-between bg-white/50">
+                <div className="sticky top-0 z-10 p-5 md:p-8 border-b border-sable/10 flex items-start md:items-center justify-between bg-white/90 backdrop-blur-sm">
                     <div>
-                        <h2 className="text-2xl font-bold text-vert font-poppins">Choisissez votre MamaSitter</h2>
-                        <p className="text-sm text-vert/60 font-poppins">Pour votre forfait <span className="text-sable font-bold">{pkg.name}</span></p>
+                        <h2 className="text-xl md:text-2xl font-bold text-vert font-poppins">Choisissez votre MamaSitter</h2>
+                        <p className="text-xs md:text-sm text-vert/60 font-poppins">Pour votre forfait <span className="text-sable font-bold">{pkg.name}</span></p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-beige rounded-full transition-colors">
                         <X className="w-6 h-6 text-vert" />

@@ -163,7 +163,7 @@ export default function MamaSitterSearch() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAF7F2] relative pb-32">
+        <div className="min-h-screen bg-[#FAF7F2] relative pb-32 overflow-x-hidden">
             {/* Soft Ambient Backgrounds */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-vert/5 rounded-full blur-[100px] pointer-events-none -mt-40 -mr-40 z-0"></div>
             <div className="absolute top-40 left-0 w-[500px] h-[500px] bg-sable/5 rounded-full blur-[100px] pointer-events-none -ml-40 z-0"></div>

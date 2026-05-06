@@ -59,7 +59,7 @@ export default function BookingSuccess() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center px-4 py-20">
+        <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center px-4 py-20 overflow-x-hidden">
             <div className="max-w-2xl w-full bg-white rounded-[60px] p-12 text-center shadow-2xl relative overflow-hidden">
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-sable/5 rounded-full blur-3xl -mr-32 -mt-32"></div>

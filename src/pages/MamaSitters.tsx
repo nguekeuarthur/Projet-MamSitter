@@ -29,7 +29,7 @@ const coreValues = [
 
 export default function MamaSitters() {
     return (
-        <div className="min-h-screen bg-[#FAF7F2]">
+        <div className="min-h-screen bg-[#FAF7F2] overflow-x-hidden">
             {/* Hero & Selection Grid - Combined for a more dynamic feel */}
             <section className="relative pt-8 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
                 {/* Soft blur background */}

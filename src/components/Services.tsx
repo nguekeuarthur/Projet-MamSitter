@@ -128,6 +128,17 @@ export default function Services() {
       return;
     }
 
+    const scrollY = window.scrollY;
+    const originalOverflow = document.body.style.overflow;
+    const originalPosition = document.body.style.position;
+    const originalTop = document.body.style.top;
+    const originalWidth = document.body.style.width;
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleCloseDetails();
@@ -135,7 +146,14 @@ export default function Services() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+      document.body.style.position = originalPosition;
+      document.body.style.top = originalTop;
+      document.body.style.width = originalWidth;
+      window.scrollTo(0, scrollY);
+    };
   }, [isDetailsModalOpen]);
 
   return (
@@ -179,7 +197,7 @@ export default function Services() {
             return (
               <div
                 key={pkg.name}
-                className={`relative bg-white rounded-2xl border-2 p-0 overflow-hidden transition-all ${pkg.popular ? 'shadow-xl scale-105' : 'hover:shadow-lg'
+                className={`relative bg-white rounded-2xl border-2 p-0 overflow-hidden transition-all ${pkg.popular ? 'shadow-xl md:scale-105' : 'hover:shadow-lg'
                   }`}
                 style={{ borderColor: pkg.popular ? '#D39280' : '#e5e7eb' }}
               >
@@ -250,21 +268,21 @@ export default function Services() {
 
       {isDetailsModalOpen && detailsPkg && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-3 pt-6 md:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto"
           onClick={handleCloseDetails}
         >
           <div
-            className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+            className="w-full max-w-3xl bg-white rounded-[26px] md:rounded-3xl shadow-2xl overflow-hidden max-h-[calc(100dvh-1.5rem)] md:max-h-[90vh] flex flex-col"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="px-6 md:px-8 py-5 border-b border-sable/15 flex items-start justify-between gap-4">
+            <div className="sticky top-0 z-10 px-5 md:px-8 py-4 md:py-5 border-b border-sable/15 flex items-start justify-between gap-4 bg-white/95 backdrop-blur-sm">
               <div>
-                <h3 className="text-2xl md:text-3xl font-bold text-sable font-poppins">Coffret {detailsPkg.name}</h3>
+                <h3 className="text-xl md:text-3xl font-bold text-sable font-poppins">Coffret {detailsPkg.name}</h3>
                 <p className="text-sm text-vert/70 mt-1">{detailsPkg.shortDescription}</p>
               </div>
               <button
                 onClick={handleCloseDetails}
-                className="text-vert/50 hover:text-vert text-sm font-bold uppercase tracking-wider"
+                className="text-vert/50 hover:text-vert text-xs md:text-sm font-bold uppercase tracking-wider"
               >
                 Fermer
               </button>
