@@ -1,14 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lato:wght@700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
+/* Charte Typographique MamSitter */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #F3ede0;
 }
 
-body {
-  font-family: "Poppins", sans-serif;
-  background-color: #ffffff;
+html, body, #root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+html, body {
+  overscroll-behavior-x: none;
+}
+
+/* Titres H1-H6 : Poppins 700 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+}
+
+/* Navigation : Lato 700 + uppercase */
+nav, nav a, nav button {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+}
+
+/* Boutons : uppercase */
+button {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Titres de sections : uppercase */
+.section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
