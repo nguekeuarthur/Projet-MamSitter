@@ -63,7 +63,7 @@ export default function HowItWorks() {
                   </div>
 
                   {/* Content */}
-                  <div className="bg-white/40 backdrop-blur-sm rounded-[40px] p-8 border border-white/60 shadow-sm group-hover:shadow-xl transition-all duration-500 text-center w-full min-h-[220px] flex flex-col justify-center">
+                  <div className="bg-white/40 backdrop-blur-sm rounded-[40px] p-8 border border-white/60 shadow-sm group-hover:shadow-xl transition-all duration-500 text-center w-full h-[220px] flex flex-col justify-center">
                     <h3 className="text-xl font-bold mb-4 text-vert font-poppins leading-snug">
                       {step.title}
                     </h3>

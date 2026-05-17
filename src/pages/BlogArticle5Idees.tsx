@@ -277,7 +277,7 @@ export default function BlogArticle5Idees() {
             {comments.map((comment) => (
               <div key={comment.id} className="flex gap-4 pb-8 border-b border-beige last:border-0">
                 <img
-                  src={comment.avatar}
+                  src={comment.author === 'Cérina C.' ? '/images/propos.jpg' : '/images/avatar-placeholder.jpg'}
                   alt={comment.author}
                   className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                 />

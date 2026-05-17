@@ -15,34 +15,18 @@ export default function CoverageAndGifts() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-            {/* France */}
-            <div className="flex flex-col items-center">
+          <div className="flex justify-center mb-20">
+            <div className="flex flex-col items-center max-w-3xl text-center">
               <img
-                src="/images/carte-france.png"
-                alt="MamSitter France"
-                className="w-full h-64 object-contain mb-6"
+                src="/images/carte french swiss.png"
+                alt="MamSitter France & Suisse Romande"
+                className="w-full h-auto max-w-xl object-contain mb-6"
               />
-              <h3 className="text-2xl font-bold text-sable font-poppins mb-3">
-                MamSitter France aide jeunes mamans
+              <h3 className="text-3xl sm:text-4xl font-bold text-sable font-poppins mb-4">
+                MamSitter France & Suisse Romande aide jeunes mamans
               </h3>
-              <p className="text-gray-700 text-center font-poppins">
-                Accompagnement personnalisé après la naissance dans toute la France
-              </p>
-            </div>
-
-            {/* Suisse Romande */}
-            <div className="flex flex-col items-center">
-              <img
-                src="/images/drapeau-suisse.png"
-                alt="MamSitter Suisse Romande"
-                className="w-full h-64 object-contain mb-6"
-              />
-              <h3 className="text-2xl font-bold text-sable font-poppins mb-3">
-                MamSitter Suisse aide jeunes mamans
-              </h3>
-              <p className="text-gray-700 text-center font-poppins">
-                En Suisse Romande (canton de Genève et Lausanne)
+              <p className="text-gray-700 text-base sm:text-lg font-poppins">
+                Accompagnement personnalisé après la naissance dans toute la France et en Suisse Romande (canton de Genève et Lausanne).
               </p>
             </div>
           </div>
@@ -62,7 +46,7 @@ export default function CoverageAndGifts() {
             </p>
 
             <p className="text-sm text-gray-600 italic font-poppins">
-              Pour en savoir plus sur le congé maternité et le retour à la maison, vous pouvez consulter le site de l'assurance maladie.
+              Pour en savoir plus sur le congé maternité et le retour à la maison, vous pouvez consulter le site de <a href="https://www.ameli.fr/" target="_blank" rel="noreferrer" className="text-[#B2B7F0] underline">l'assurance maladie</a>. Pour en savoir plus sur les cadeaux de naissance, visitez notre <a href="#/blog" className="text-[#B2B7F0] underline">Blog</a>.
             </p>
           </div>
         </div>
@@ -97,8 +81,8 @@ export default function CoverageAndGifts() {
                   </p>
                 </div>
 
-                <div className="bg-white/10 rounded-xl p-6">
-                  <p className="text-lg text-beige leading-relaxed font-poppins">
+                <div className="bg-orange-100 rounded-xl p-6">
+                  <p className="text-lg text-sable leading-relaxed font-poppins">
                     Avec MamSitter, offrez-vous ou offrez une aide post-partum à domicile. Nos MamaSitters expérimentées offrent aux jeunes mamans un soutien bienveillant, pratique et émotionnel pour mieux vivre les premières semaines après la naissance.
                   </p>
                 </div>
